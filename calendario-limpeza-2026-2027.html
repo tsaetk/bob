@@ -875,6 +875,8 @@ function baseTasks(dateStr,dow,diaOrdem,isFeriado,isDiarista,isAcademia){
     const base=[T("Organizar antes da diarista",20,"")];
     if(diaOrdem===1)base.push(...[T("[D] Pisos + debaixo móveis",60,"muted"),T("[D] Banheiros completos",70,"muted"),T("[D] Fogão minucioso + coifa",45,"muted"),T("[D] Geladeira + lixeiras",35,"muted"),T("* [D] Colchões (2 lados) + cabeceiras",45,"alergia"),T("* [D] Tapete frente+verso+baixo",25,"alergia"),T("[D] Área serviço + atrás máquina",25,"muted"),T("* [D] Luminárias (3)",25,"alergia"),T("[D] Rack + aparadores + barzinho",20,"muted"),T("[D] Guarda-roupas internos",35,"muted"),T("[D] Portas + batentes (todos)",50,"muted"),T("[D] Cozinha: azulejos+armários+pia",45,"muted")]);
     else base.push(...[T("[D] Pisos todos os cômodos",60,"muted"),T("[D] Banheiros completos",70,"muted"),T("[D] Sofá completo + almofadas",25,"muted"),T("[D] Sacada + churrasqueira + grades",40,"muted"),T("[D] Rodapés todos os cômodos",55,"muted"),T("[D] Espelhos + janelas",25,"muted"),T("[D] Rack + aparadores + barzinho",20,"muted"),T("[D] Guarda-roupas externos",35,"muted"),T("[D] Tapete: aspiração normal",15,"muted"),T("[D] Cestas banheiros + porta-papéis",10,"muted"),T("[D] Cozinha manutenção + bancadas",30,"muted")]);
+    // tarefas extras da diarista movidas da manutenção
+    if(DIARISTA_EXTRAS[dateStr]) base.push(...DIARISTA_EXTRAS[dateStr].map(e=>({...e})));
     base.push(T("Lavar toalhas de banho",5,"lav"));
     if(dow===3)base.push(T("Uniforme João: lavar à mão",15,"unif"));
     return base;
@@ -897,15 +899,9 @@ function baseTasks(dateStr,dow,diaOrdem,isFeriado,isDiarista,isAcademia){
 // ─── TAREFAS BASE MANUTENÇÃO ─────────────────────────────────────────────────
 const MANUT_BASE = [
   // formato: {date, text, who:'eu'|'empresa', cat, min}
-  {date:"2026-08-01",text:"Varais (3): limpar",who:"eu",cat:"estrutura",min:30},
-  {date:"2026-08-01",text:"Cadeiras escritório (3): limpar",who:"eu",cat:"estrutura",min:30},
-  {date:"2026-08-01",text:"Robô aspirador: saco+filtro+escova",who:"eu",cat:"eletrodomesticos",min:20},
-  {date:"2026-08-01",text:"Travesseiros: limpeza minuciosa",who:"eu",cat:"estrutura",min:30},
+  // --- tarefas que ficam na manutenção (feitas por mim ou empresa especializada) ---
   {date:"2026-08-01",text:"Canos: desentupimento preventivo",who:"eu",cat:"hidraulica",min:30},
   {date:"2026-09-05",text:"Ar condicionado + condensadora: limpeza profissional",who:"empresa",cat:"climatizacao",min:120},
-  {date:"2026-09-05",text:"Armário superior: revisar",who:"eu",cat:"estrutura",min:30},
-  {date:"2026-09-05",text:"Baú de sacolas: limpar",who:"eu",cat:"estrutura",min:20},
-  {date:"2026-09-05",text:"Forno: limpeza profunda",who:"eu",cat:"eletrodomesticos",min:45},
   {date:"2026-09-05",text:"PlayStation: limpar",who:"eu",cat:"eletrodomesticos",min:20},
   {date:"2026-09-05",text:"Chuveiros: limpeza minuciosa (vinagre)",who:"eu",cat:"hidraulica",min:45},
   {date:"2026-09-05",text:"Revisar documentos e contas",who:"eu",cat:"outros",min:60},
@@ -913,20 +909,8 @@ const MANUT_BASE = [
   {date:"2026-09-05",text:"Telas TVs e computadores: limpar",who:"eu",cat:"eletrodomesticos",min:20},
   {date:"2026-09-05",text:"Revisão das portas (dobradiças, maçanetas)",who:"eu",cat:"estrutura",min:30},
   {date:"2026-09-19",text:"Persianas: limpeza completa (única vez)",who:"eu",cat:"estrutura",min:90},
-  {date:"2026-10-03",text:"Varais (3): limpar",who:"eu",cat:"estrutura",min:30},
-  {date:"2026-10-03",text:"Cadeiras escritório (3): limpar",who:"eu",cat:"estrutura",min:30},
-  {date:"2026-10-03",text:"Robô aspirador: saco+filtro+escova",who:"eu",cat:"eletrodomesticos",min:20},
-  {date:"2026-10-03",text:"Travesseiros: limpeza minuciosa",who:"eu",cat:"estrutura",min:30},
   {date:"2026-10-03",text:"Canos: desentupimento preventivo",who:"eu",cat:"hidraulica",min:30},
   {date:"2026-10-03",text:"Lavar tapete da sala",who:"eu",cat:"estrutura",min:30},
-  {date:"2026-11-04",text:"Depósito: limpeza completa (diarista)",who:"eu",cat:"estrutura",min:60},
-  {date:"2026-11-07",text:"Armário superior: revisar",who:"eu",cat:"estrutura",min:30},
-  {date:"2026-11-07",text:"Baú de sacolas: limpar",who:"eu",cat:"estrutura",min:20},
-  {date:"2026-11-07",text:"Forno: limpeza profunda",who:"eu",cat:"eletrodomesticos",min:45},
-  {date:"2026-12-05",text:"Varais (3): limpar",who:"eu",cat:"estrutura",min:30},
-  {date:"2026-12-05",text:"Cadeiras escritório (3): limpar",who:"eu",cat:"estrutura",min:30},
-  {date:"2026-12-05",text:"Robô aspirador: saco+filtro+escova",who:"eu",cat:"eletrodomesticos",min:20},
-  {date:"2026-12-05",text:"Travesseiros: limpeza minuciosa",who:"eu",cat:"estrutura",min:30},
   {date:"2026-12-05",text:"Canos: desentupimento preventivo",who:"eu",cat:"hidraulica",min:30},
   {date:"2026-12-05",text:"PlayStation: limpar",who:"eu",cat:"eletrodomesticos",min:20},
   {date:"2026-12-05",text:"Chuveiros: limpeza minuciosa (vinagre)",who:"eu",cat:"hidraulica",min:45},
@@ -937,6 +921,55 @@ const MANUT_BASE = [
   {date:"2027-01-03",text:"Telas TVs e computadores: limpar",who:"eu",cat:"eletrodomesticos",min:20},
   {date:"2027-01-03",text:"Revisão das portas",who:"eu",cat:"estrutura",min:30},
 ];
+
+// ─── TAREFAS EXTRAS DA DIARISTA (por data) ───────────────────────────────────
+// Tarefas movidas da manutenção → passam a ser [D] nos dias de diarista
+const DIARISTA_EXTRAS = {
+  // Q2 — 05/ago/2026
+  "2026-08-05": [
+    {text:"[D] Varais (3): limpar/lavar",min:30,cls:"muted",cat:"limpeza"},
+    {text:"[D] Cadeiras escritório (3): limpar",min:30,cls:"muted",cat:"limpeza"},
+    {text:"[D] Robô aspirador: saco+filtro+escova",min:20,cls:"muted",cat:"limpeza"},
+    {text:"[D] Travesseiros: limpeza minuciosa",min:30,cls:"alergia",cat:"limpeza"},
+  ],
+  // Q1 — 02/set/2026
+  "2026-09-02": [
+    {text:"[D] Armário superior: revisar",min:30,cls:"muted",cat:"organizacao"},
+    {text:"[D] Baú de sacolas: limpar",min:20,cls:"muted",cat:"organizacao"},
+    {text:"[D] Forno: limpeza profunda",min:45,cls:"muted",cat:"cozinha"},
+  ],
+  // Q2 — 30/set/2026
+  "2026-09-30": [
+    {text:"[D] Varais (3): limpar/lavar",min:30,cls:"muted",cat:"limpeza"},
+    {text:"[D] Cadeiras escritório (3): limpar",min:30,cls:"muted",cat:"limpeza"},
+    {text:"[D] Robô aspirador: saco+filtro+escova",min:20,cls:"muted",cat:"limpeza"},
+    {text:"[D] Travesseiros: limpeza minuciosa",min:30,cls:"alergia",cat:"limpeza"},
+  ],
+  // Q1 — 04/nov/2026
+  "2026-11-04": [
+    {text:"[D] Depósito: limpeza completa",min:60,cls:"muted",cat:"limpeza"},
+    {text:"[D] Armário superior: revisar",min:30,cls:"muted",cat:"organizacao"},
+    {text:"[D] Baú de sacolas: limpar",min:20,cls:"muted",cat:"organizacao"},
+    {text:"[D] Forno: limpeza profunda",min:45,cls:"muted",cat:"cozinha"},
+  ],
+  // Q2 — 18/nov/2026
+  "2026-11-18": [
+    {text:"[D] Varais (3): limpar/lavar",min:30,cls:"muted",cat:"limpeza"},
+    {text:"[D] Cadeiras escritório (3): limpar",min:30,cls:"muted",cat:"limpeza"},
+    {text:"[D] Robô aspirador: saco+filtro+escova",min:20,cls:"muted",cat:"limpeza"},
+    {text:"[D] Travesseiros: limpeza minuciosa",min:30,cls:"alergia",cat:"limpeza"},
+  ],
+  // Q1 — 02/dez/2026
+  "2026-12-02": [
+    {text:"[D] Varais (3): limpar/lavar",min:30,cls:"muted",cat:"limpeza"},
+    {text:"[D] Cadeiras escritório (3): limpar",min:30,cls:"muted",cat:"limpeza"},
+    {text:"[D] Robô aspirador: saco+filtro+escova",min:20,cls:"muted",cat:"limpeza"},
+    {text:"[D] Travesseiros: limpeza minuciosa",min:30,cls:"alergia",cat:"limpeza"},
+    {text:"[D] Armário superior: revisar",min:30,cls:"muted",cat:"organizacao"},
+    {text:"[D] Baú de sacolas: limpar",min:20,cls:"muted",cat:"organizacao"},
+    {text:"[D] Forno: limpeza profunda",min:45,cls:"muted",cat:"cozinha"},
+  ],
+};
 const CAT_LABELS={hidraulica:"🚿 Hidráulica",eletrica:"⚡ Elétrica",climatizacao:"❄️ Climatização",estrutura:"🏗️ Estrutura",eletrodomesticos:"🏠 Eletrodomésticos",outros:"📋 Outros"};
 const CAT_MANUT_COLORS={hidraulica:"#0891b2",eletrica:"#f59e0b",climatizacao:"#3b82d4",estrutura:"#8b5cf6",eletrodomesticos:"#059669",outros:"#6b7280"};
 
