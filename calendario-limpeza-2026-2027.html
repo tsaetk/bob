@@ -406,6 +406,30 @@ h1{font-size:20px;font-weight:700;margin-bottom:2px;}
     <div class="leg"><div class="dot" style="background:#dbeafe"></div> 🔵 Eu mesmo</div>
     <div class="leg"><div class="dot" style="background:#d1fae5"></div> 🟢 Empresa</div>
   </div>
+  <!-- FILTROS MANUTENÇÃO -->
+  <div class="filter-bar no-print">
+    <span class="filter-label">Por responsável:</span>
+    <button class="fbtn active-all" id="mfbtn-all"     onclick="setFilterM('resp','all')">Todos</button>
+    <button class="fbtn"            id="mfbtn-eu"      onclick="setFilterM('resp','eu')">🔵 Eu mesmo</button>
+    <button class="fbtn"            id="mfbtn-empresa" onclick="setFilterM('resp','empresa')">🟢 Empresa</button>
+  </div>
+  <div class="filter-bar no-print">
+    <span class="filter-label">Por categoria:</span>
+    <button class="fbtn active-all" id="mfcat-all"           onclick="setFilterM('cat','all')">Todas</button>
+    <div class="filter-sep"></div>
+    <button class="fbtn" id="mfcat-hidraulica"    onclick="setFilterM('cat','hidraulica')">🚿 Hidráulica</button>
+    <button class="fbtn" id="mfcat-eletrica"      onclick="setFilterM('cat','eletrica')">⚡ Elétrica</button>
+    <button class="fbtn" id="mfcat-climatizacao"  onclick="setFilterM('cat','climatizacao')">❄️ Climatização</button>
+    <button class="fbtn" id="mfcat-estrutura"     onclick="setFilterM('cat','estrutura')">🏗️ Estrutura</button>
+    <button class="fbtn" id="mfcat-eletrodomesticos" onclick="setFilterM('cat','eletrodomesticos')">🏠 Eletrodomésticos</button>
+    <button class="fbtn" id="mfcat-outros"        onclick="setFilterM('cat','outros')">📋 Outros</button>
+  </div>
+  <div class="filter-bar no-print">
+    <span class="filter-label">Por status:</span>
+    <button class="fbtn active-all" id="mfstatus-all"       onclick="setFilterM('status','all')">Todas</button>
+    <button class="fbtn"            id="mfstatus-pendente"  onclick="setFilterM('status','pendente')">⏳ Pendentes</button>
+    <button class="fbtn"            id="mfstatus-feita"     onclick="setFilterM('status','feita')">✅ Concluídas</button>
+  </div>
   <div class="month-nav green no-print" id="mnav-manut"></div>
   <div id="cal-manutencao"></div>
 </div>
@@ -914,6 +938,66 @@ const MANUT_BASE = [
   {date:"2027-01-03",text:"Revisão das portas",who:"eu",cat:"estrutura",min:30},
 ];
 const CAT_LABELS={hidraulica:"🚿 Hidráulica",eletrica:"⚡ Elétrica",climatizacao:"❄️ Climatização",estrutura:"🏗️ Estrutura",eletrodomesticos:"🏠 Eletrodomésticos",outros:"📋 Outros"};
+const CAT_MANUT_COLORS={hidraulica:"#0891b2",eletrica:"#f59e0b",climatizacao:"#3b82d4",estrutura:"#8b5cf6",eletrodomesticos:"#059669",outros:"#6b7280"};
+
+// ─── FILTROS MANUTENÇÃO ──────────────────────────────────────────────────────
+let activeFilterMResp='all', activeFilterMCat='all', activeFilterMStatus='all';
+
+function applyFiltersM(){
+  document.querySelectorAll('#cal-manutencao .task-row').forEach(row=>{
+    const resp   = row.dataset.mResp   || 'eu';
+    const cat    = row.dataset.mCat    || 'outros';
+    const done   = row.dataset.mDone   === 'true';
+    const passResp   = activeFilterMResp   === 'all' || resp === activeFilterMResp;
+    const passCat    = activeFilterMCat    === 'all' || cat  === activeFilterMCat;
+    const passStatus = activeFilterMStatus === 'all'
+      || (activeFilterMStatus === 'pendente' && !done)
+      || (activeFilterMStatus === 'feita'    &&  done);
+    row.classList.toggle('hidden-filter', !(passResp && passCat && passStatus));
+  });
+  // ocultar células sem tarefas visíveis
+  document.querySelectorAll('#cal-manutencao .mday').forEach(cell=>{
+    const rows = cell.querySelectorAll('.task-row');
+    const visible = [...rows].some(r=>!r.classList.contains('hidden-filter'));
+    cell.style.opacity = rows.length>0 && !visible ? '0.35' : '';
+  });
+}
+
+function setFilterM(type, val){
+  if(type==='resp'){
+    activeFilterMResp=val;
+    ['all','eu','empresa'].forEach(id=>{
+      const b=document.getElementById('mfbtn-'+id); if(!b)return;
+      b.className='fbtn'+(val===id?' active-'+(id==='all'?'all':id==='eu'?'eu':'cat'):'');
+      if(val===id&&id==='eu'){b.style.background='#3b82d4';b.style.borderColor='#3b82d4';b.style.color='#fff';}
+      else if(val===id&&id==='empresa'){b.style.background='#059669';b.style.borderColor='#059669';b.style.color='#fff';}
+      else{b.style.background='';b.style.borderColor='';b.style.color='';}
+    });
+  }
+  if(type==='cat'){
+    activeFilterMCat=val;
+    const allB=document.getElementById('mfcat-all');
+    if(allB){allB.className='fbtn'+(val==='all'?' active-all':'');allB.style.background='';allB.style.borderColor='';allB.style.color='';}
+    Object.keys(CAT_MANUT_COLORS).forEach(k=>{
+      const b=document.getElementById('mfcat-'+k); if(!b)return;
+      if(val===k){b.className='fbtn active-cat';b.style.background=CAT_MANUT_COLORS[k];b.style.borderColor=CAT_MANUT_COLORS[k];b.style.color='#fff';}
+      else{b.className='fbtn';b.style.background='';b.style.borderColor='';b.style.color='';}
+    });
+  }
+  if(type==='status'){
+    activeFilterMStatus=val;
+    ['all','pendente','feita'].forEach(id=>{
+      const b=document.getElementById('mfstatus-'+id); if(!b)return;
+      const isActive=val===id;
+      const colors={all:'#1f2328',pendente:'#f59e0b',feita:'#059669'};
+      b.className='fbtn'+(isActive?' active-cat':'');
+      b.style.background=isActive?colors[id]:'';
+      b.style.borderColor=isActive?colors[id]:'';
+      b.style.color=isActive?'#fff':'';
+    });
+  }
+  applyFiltersM();
+}
 
 function getManutTasks(dateStr){
   if(stateM[dateStr]) return stateM[dateStr];
@@ -1142,18 +1226,28 @@ function renderManutencao(){
         topWrap.appendChild(ttT);cell.appendChild(topWrap);
 
         tasks.forEach((t,idx)=>{
+          const catColor = CAT_MANUT_COLORS[t.cat] || '#6b7280';
           const row=document.createElement('div');row.className='task-row'+(t.who==='empresa'?' empresa':'');row.draggable=true;
+          row.dataset.mResp = t.who||'eu';
+          row.dataset.mCat  = t.cat||'outros';
+          row.dataset.mDone = String(!!t._done);
           row.addEventListener('dragstart',e=>onDragStartM(e,dateStr,idx));row.addEventListener('dragend',e=>onDragEnd(e));
           const uid='m'+dateStr+'_'+idx;
           const cb=document.createElement('input');cb.type='checkbox';cb.id='cb_'+uid;cb.checked=!!t._done;
+          const dot=document.createElement('span');dot.className='cat-dot no-print';dot.style.background=catColor;dot.title=CAT_LABELS[t.cat]||t.cat;
           const lb=document.createElement('label');lb.htmlFor='cb_'+uid;lb.className=t.who==='empresa'?'empresa':'manut';lb.textContent=t.text;
           if(t._done)lb.style.textDecoration='line-through';
-          cb.addEventListener('change',e=>{toggleCheckM(dateStr,idx,e.target.checked);lb.style.textDecoration=e.target.checked?'line-through':'';});
+          cb.addEventListener('change',e=>{
+            toggleCheckM(dateStr,idx,e.target.checked);
+            lb.style.textDecoration=e.target.checked?'line-through':'';
+            row.dataset.mDone=String(e.target.checked);
+            if(activeFilterMResp!=='all'||activeFilterMCat!=='all'||activeFilterMStatus!=='all') applyFiltersM();
+          });
           const who=document.createElement('span');who.className='t-who '+(t.who==='empresa'?'emp':'eu');who.textContent=t.who==='empresa'?'Emp.':'Eu';
           const ms=document.createElement('span');ms.className='t-min';ms.textContent=t.min?t.min+'m':'';
           const del=document.createElement('button');del.className='del-btn no-print';del.textContent='✕';
           del.addEventListener('click',e=>{e.stopPropagation();deleteTaskM(dateStr,idx);});
-          row.appendChild(cb);row.appendChild(lb);row.appendChild(who);row.appendChild(ms);row.appendChild(del);cell.appendChild(row);
+          row.appendChild(cb);row.appendChild(dot);row.appendChild(lb);row.appendChild(who);row.appendChild(ms);row.appendChild(del);cell.appendChild(row);
         });
       }
       if(inRange){
@@ -1163,6 +1257,8 @@ function renderManutencao(){
     }
     sec.appendChild(grid);root.appendChild(sec);
   });
+  // reaplicar filtros ativos após re-render
+  if(activeFilterMResp!=='all'||activeFilterMCat!=='all'||activeFilterMStatus!=='all') applyFiltersM();
 }
 
 // ─── IMPRIMIR DIA ─────────────────────────────────────────────────────────────
