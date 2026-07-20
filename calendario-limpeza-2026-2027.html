@@ -1,0 +1,1096 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<title>Calendário de Limpeza & Manutenção 2026–2027</title>
+<style>
+@media print {
+  body{font-size:9px!important;}
+  .no-print{display:none!important;}
+  .wrapper{padding:4px!important;max-width:100%!important;}
+  .cal-grid{gap:2px!important;}
+  .day{min-height:80px!important;padding:3px!important;page-break-inside:avoid;}
+  .task-row label{font-size:8px!important;}
+  .task-row input[type=checkbox]{width:9px!important;height:9px!important;}
+  .month-section{page-break-after:always;}
+  .month-header{font-size:11px!important;border-bottom:1px solid #000!important;margin-bottom:4px!important;}
+  .tab-content{display:none!important;}
+  .tab-content.active{display:block!important;}
+}
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0;}
+body{font-family:-apple-system,"Segoe UI",system-ui,sans-serif;font-size:13px;line-height:1.5;background:#f7f8fa;color:#1f2328;}
+.wrapper{max-width:1060px;margin:0 auto;padding:16px 10px 60px;}
+h1{font-size:20px;font-weight:700;margin-bottom:2px;}
+.subtitle{color:#57606a;font-size:12px;margin-bottom:14px;}
+
+/* ── ABAS ── */
+.tabs{display:flex;gap:0;border-bottom:2px solid #e5e7eb;margin-bottom:18px;}
+.tab-btn{padding:8px 20px;font-size:13px;font-weight:600;border:none;background:none;cursor:pointer;color:#57606a;border-bottom:3px solid transparent;margin-bottom:-2px;transition:all .15s;}
+.tab-btn:hover{color:#1f2328;}
+.tab-btn.active{color:#3b82d4;border-bottom-color:#3b82d4;}
+.tab-btn.active.manut{color:#059669;border-bottom-color:#059669;}
+.tab-btn.active.visao{color:#b45309;border-bottom-color:#b45309;}
+
+/* ── VISÃO DIARISTA ── */
+.vd-section{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:20px;}
+.vd-section h2{font-size:15px;font-weight:700;margin-bottom:14px;display:flex;align-items:center;gap:8px;}
+.vd-summary{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-bottom:20px;}
+.vd-card{background:#f7f8fa;border:1px solid #e5e7eb;border-radius:6px;padding:12px;text-align:center;}
+.vd-card .vd-num{font-size:24px;font-weight:700;}
+.vd-card .vd-lbl{font-size:11px;color:#57606a;margin-top:2px;}
+.vd-card.roxo .vd-num{color:#6d28d9;}
+.vd-card.azul .vd-num{color:#3b82d4;}
+.vd-card.verde .vd-num{color:#059669;}
+.vd-card.amber .vd-num{color:#b45309;}
+/* tabela de visitas */
+.vd-table{width:100%;border-collapse:collapse;font-size:12px;}
+.vd-table th{background:#f7f8fa;padding:7px 8px;text-align:left;border-bottom:2px solid #e5e7eb;font-size:11px;font-weight:700;color:#57606a;white-space:nowrap;}
+.vd-table td{padding:7px 8px;border-bottom:1px solid #f3f4f6;vertical-align:top;}
+.vd-table tr:hover td{background:#fafafa;}
+.vd-badge{display:inline-block;font-size:10px;font-weight:700;padding:2px 7px;border-radius:10px;white-space:nowrap;}
+.vd-q1{background:#ede9fe;color:#6d28d9;}
+.vd-q2{background:#f3e8ff;color:#7c3aed;}
+.vd-ok{background:#dcfce7;color:#166534;}
+.vd-warn{background:#fef9c3;color:#854d0e;}
+.vd-alert{background:#fee2e2;color:#991b1b;}
+/* heatmap de cômodos */
+.vd-heat-wrap{overflow-x:auto;}
+.vd-heat{border-collapse:collapse;font-size:10px;min-width:600px;}
+.vd-heat th{padding:5px 6px;white-space:nowrap;font-size:10px;font-weight:600;color:#57606a;border-bottom:2px solid #e5e7eb;text-align:center;}
+.vd-heat th.sticky{text-align:left;position:sticky;left:0;background:#fff;z-index:1;min-width:110px;}
+.vd-heat td{padding:4px 3px;text-align:center;border:1px solid #f3f4f6;}
+.vd-heat td.sticky{position:sticky;left:0;background:#fff;z-index:1;font-weight:600;font-size:10px;padding:4px 6px;white-space:nowrap;border-right:2px solid #e5e7eb;}
+.heat-0{background:#f3f4f6;color:#d1d5db;}
+.heat-1{background:#bbf7d0;color:#166534;}
+.heat-x{background:#fef9c3;color:#854d0e;}
+/* timeline */
+.vd-timeline{display:flex;flex-direction:column;gap:0;}
+.vd-tl-row{display:flex;align-items:stretch;gap:0;}
+.vd-tl-line{width:2px;background:#e5e7eb;margin:0 18px;flex-shrink:0;position:relative;}
+.vd-tl-dot{width:12px;height:12px;border-radius:50%;position:absolute;left:50%;transform:translateX(-50%);top:14px;}
+.vd-tl-dot.q1{background:#6d28d9;}
+.vd-tl-dot.q2{background:#8b5cf6;}
+.vd-tl-content{flex:1;padding:10px 0 10px 0;border-bottom:1px solid #f3f4f6;}
+.vd-tl-header{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px;}
+.vd-tl-date{font-size:13px;font-weight:700;}
+.vd-tl-tasks{display:flex;flex-wrap:wrap;gap:4px;}
+.vd-tl-task{font-size:10px;padding:2px 7px;border-radius:10px;background:#f3f4f6;color:#374151;}
+.vd-tl-task.alergia{background:#ede9fe;color:#6d28d9;font-weight:700;}
+.tab-content{display:none;}
+.tab-content.active{display:block;}
+
+/* ── TOOLBAR ── */
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:14px;padding:9px 14px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;}
+.toolbar button{font-size:12px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid #e5e7eb;cursor:pointer;background:#f7f8fa;color:#1f2328;}
+.toolbar button:hover{background:#e5e7eb;}
+.toolbar button.primary{background:#3b82d4;color:#fff;border-color:#3b82d4;}
+.toolbar button.primary:hover{background:#2563eb;}
+.toolbar button.green{background:#059669;color:#fff;border-color:#059669;}
+.toolbar button.green:hover{background:#047857;}
+.toolbar button.danger{background:#fef2f2;color:#991b1b;border-color:#fecaca;}
+.saved-msg{font-size:12px;color:#166534;background:#f0fdf4;border:1px solid #86efac;border-radius:6px;padding:3px 10px;display:none;}
+
+/* ── LEGENDA ── */
+.legend{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:12px;}
+.leg{display:flex;align-items:center;gap:4px;font-size:11px;}
+.dot{width:11px;height:11px;border-radius:3px;flex-shrink:0;}
+.month-nav{display:flex;flex-wrap:wrap;gap:4px;margin-bottom:14px;}
+.month-nav a{font-size:11px;color:#3b82d4;text-decoration:none;border:1px solid #e5e7eb;border-radius:4px;padding:2px 7px;background:#fff;}
+.month-nav a:hover{background:#eff6ff;}
+.month-nav.green a{color:#059669;}
+.month-nav.green a:hover{background:#f0fdf4;}
+
+/* ── GRID ── */
+.month-section{margin-bottom:26px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:12px;}
+.month-header{font-size:15px;font-weight:700;padding-bottom:7px;border-bottom:2px solid #e5e7eb;margin-bottom:9px;display:flex;align-items:center;gap:8px;}
+.year-tag{font-size:11px;color:#57606a;background:#f7f8fa;border:1px solid #e5e7eb;border-radius:10px;padding:1px 7px;}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:3px;}
+.dow-hdr{text-align:center;font-size:10px;font-weight:700;color:#57606a;padding:3px 0;}
+.dow-hdr.wk{color:#3b82d4;}
+
+/* ── CÉLULAS LIMPEZA ── */
+.day{border:1px solid #e5e7eb;border-radius:6px;padding:5px;min-height:140px;background:#fff;position:relative;}
+.day.empty{border:none;background:transparent;min-height:0;}
+.day.fora{background:#f9fafb;border-color:#f3f4f6;opacity:.45;pointer-events:none;}
+.day.feriado{background:#fffbeb;border-color:#f59e0b;}
+.day.d1{background:#f5f3ff;border-color:#6d28d9;border-width:2px;}
+.day.d2{background:#faf5ff;border-color:#8b5cf6;border-width:2px;}
+.day.fds{background:#f0fdf4;}
+.day.academia{background:#fdf4ff;}
+.day.catequese{background:#fff7ed;border-color:#f97316;}
+.day.drag-over{box-shadow:0 0 0 3px #3b82d4;}
+
+/* ── CÉLULAS MANUTENÇÃO ── */
+.mday{border:1px solid #e5e7eb;border-radius:6px;padding:5px;min-height:100px;background:#fff;position:relative;}
+.mday.empty{border:none;background:transparent;min-height:0;}
+.mday.fora{background:#f9fafb;border-color:#f3f4f6;opacity:.4;pointer-events:none;}
+.mday.has-tasks{border-color:#059669;border-width:2px;background:#f0fdf4;}
+.mday.drag-over{box-shadow:0 0 0 3px #059669;}
+
+/* ── BADGES ── */
+.day-num{font-weight:700;font-size:12px;margin-bottom:3px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:2px;}
+.bdg{font-size:8px;font-weight:700;padding:1px 5px;border-radius:6px;white-space:nowrap;}
+.bdg-d1{background:#6d28d9;color:#fff;}
+.bdg-d2{background:#8b5cf6;color:#fff;}
+.bdg-f{background:#f59e0b;color:#fff;}
+.bdg-fs{background:#86efac;color:#166534;}
+.bdg-ac{background:#e9d5ff;color:#6b21a8;}
+.bdg-cat{background:#fed7aa;color:#9a3412;}
+.bdg-eu{background:#3b82d4;color:#fff;}
+.bdg-emp{background:#059669;color:#fff;}
+.fn{font-size:8px;color:#b45309;font-weight:700;display:block;margin-bottom:2px;}
+
+/* ── TOTAIS NO TOPO ── */
+.total-top{display:flex;gap:3px;margin-bottom:4px;flex-wrap:wrap;position:relative;}
+.tt{font-size:9px;font-weight:700;color:#fff;border-radius:4px;padding:2px 6px;white-space:nowrap;cursor:default;position:relative;}
+.tt-total.ok{background:#22c55e;}
+.tt-total.over{background:#ef4444;}
+/* tooltip do limite */
+.tt[data-tip]:hover::after{content:attr(data-tip);position:absolute;bottom:calc(100% + 4px);left:50%;transform:translateX(-50%);background:#1f2328;color:#fff;font-size:10px;font-weight:400;padding:4px 8px;border-radius:5px;white-space:nowrap;z-index:99;pointer-events:none;}
+.tt[data-tip]:hover::before{content:'';position:absolute;bottom:calc(100% + 1px);left:50%;transform:translateX(-50%);border:4px solid transparent;border-top-color:#1f2328;z-index:99;}
+.tt-eu{background:#3b82d4;}
+.tt-diarista{background:#6d28d9;}
+.tt-empresa{background:#059669;}
+
+/* ── TASK ROWS ── */
+.task-row{display:flex;align-items:center;gap:3px;margin-bottom:2px;cursor:grab;border-radius:3px;padding:1px 2px;}
+.task-row:hover{background:#f3f4f6;}
+.task-row.dragging{opacity:.4;}
+.task-row input[type=checkbox]{flex-shrink:0;width:12px;height:12px;cursor:pointer;accent-color:#7c5cd8;}
+.task-row.empresa input[type=checkbox]{accent-color:#059669;}
+.task-row label{font-size:9.5px;color:#1f2328;cursor:pointer;flex:1;line-height:1.2;}
+.task-row label.lav{color:#1d4ed8;font-weight:700;}
+.task-row label.ref{color:#9a3412;}
+.task-row label.ativ{color:#7c5cd8;font-weight:700;}
+.task-row label.muted{color:#7c5cd8;font-style:italic;}
+.task-row label.mensal{color:#6b21a8;font-weight:700;}
+.task-row label.manut{color:#065f46;font-weight:700;}
+.task-row label.alergia{color:#1f2328;}
+.task-row label.unif{color:#0891b2;font-weight:700;}
+.task-row label.empresa{color:#059669;font-weight:700;}
+.task-row .t-min{font-size:8px;color:#57606a;white-space:nowrap;padding:0 2px;}
+.task-row .t-who{font-size:8px;font-weight:700;padding:0 3px;border-radius:3px;white-space:nowrap;}
+.t-who.eu{background:#dbeafe;color:#1e40af;}
+.t-who.emp{background:#d1fae5;color:#065f46;}
+.task-row .del-btn{font-size:9px;color:#d1d5db;cursor:pointer;padding:0 2px;flex-shrink:0;border:none;background:none;display:none;}
+.task-row:hover .del-btn{display:block;color:#ef4444;}
+.add-task-btn{font-size:9px;color:#3b82d4;cursor:pointer;border:1px dashed #bfdbfe;border-radius:4px;padding:2px 5px;margin-top:3px;width:100%;text-align:center;background:#f8faff;display:none;}
+.mday .add-task-btn{color:#059669;border-color:#6ee7b7;background:#f0fdf4;}
+.day:hover .add-task-btn,.mday:hover .add-task-btn{display:block;}
+.print-day-btn{position:absolute;bottom:5px;right:5px;font-size:10px;padding:2px 5px;border-radius:4px;border:1px solid #e5e7eb;background:#f7f8fa;cursor:pointer;color:#57606a;display:none;line-height:1;}
+.day:hover .print-day-btn{display:block;}
+
+/* ── FILTROS ── */
+.filter-bar{display:flex;flex-wrap:wrap;gap:6px;align-items:center;margin-bottom:8px;padding:8px 14px;background:#fff;border:1px solid #e5e7eb;border-radius:8px;}
+.filter-bar .filter-label{font-size:11px;font-weight:700;color:#57606a;margin-right:4px;white-space:nowrap;}
+.filter-sep{width:1px;height:20px;background:#e5e7eb;margin:0 4px;}
+.fbtn{font-size:11px;font-weight:600;padding:4px 12px;border-radius:20px;border:1px solid #e5e7eb;cursor:pointer;background:#f7f8fa;color:#57606a;transition:all .12s;display:inline-flex;align-items:center;gap:4px;}
+.fbtn:hover{background:#e5e7eb;}
+.fbtn.active-all{background:#1f2328;color:#fff;border-color:#1f2328;}
+.fbtn.active-eu{background:#3b82d4;color:#fff;border-color:#3b82d4;}
+.fbtn.active-diarista{background:#6d28d9;color:#fff;border-color:#6d28d9;}
+.fbtn.active-cat{color:#fff;}
+.fbtn .fbtn-count{font-size:9px;background:rgba(255,255,255,.3);border-radius:8px;padding:0 5px;min-width:16px;text-align:center;}
+.fbtn:not(.active-cat) .fbtn-count{background:#e5e7eb;color:#57606a;}
+.task-row.hidden-filter{display:none!important;}
+/* dot de categoria na task-row */
+.cat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;display:inline-block;}
+
+/* ── GRÁFICO ── */
+.chart-section{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:24px;}
+.chart-section h2{font-size:15px;font-weight:700;margin-bottom:14px;}
+.chart-wrap{display:grid;grid-template-columns:1fr 1fr;gap:20px;}
+.chart-box{background:#f7f8fa;border:1px solid #e5e7eb;border-radius:6px;padding:12px;}
+.chart-box h3{font-size:13px;font-weight:600;margin-bottom:10px;color:#374151;}
+.bar-chart{display:flex;flex-direction:column;gap:6px;}
+.bc-row{display:flex;align-items:center;gap:8px;}
+.bc-label{font-size:11px;color:#57606a;width:140px;flex-shrink:0;text-align:right;}
+.bc-bar-wrap{flex:1;background:#f3f4f6;border-radius:4px;height:18px;position:relative;overflow:hidden;}
+.bc-bar{height:100%;border-radius:4px;transition:width .4s;}
+.bc-bar.done{background:#22c55e;}
+.bc-bar.pending{background:#e5e7eb;}
+.bc-val{font-size:10px;font-weight:700;position:absolute;right:4px;top:50%;transform:translateY(-50%);color:#374151;}
+.donut-wrap{display:flex;align-items:center;gap:20px;justify-content:center;padding:8px 0;}
+.donut-legend{display:flex;flex-direction:column;gap:6px;}
+.dl-item{display:flex;align-items:center;gap:6px;font-size:12px;}
+.dl-dot{width:12px;height:12px;border-radius:50%;flex-shrink:0;}
+.progress-summary{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-top:14px;}
+.ps-card{background:#f7f8fa;border:1px solid #e5e7eb;border-radius:6px;padding:10px;text-align:center;}
+.ps-card .ps-num{font-size:22px;font-weight:700;}
+.ps-card .ps-label{font-size:11px;color:#57606a;}
+.ps-card.green .ps-num{color:#059669;}
+.ps-card.blue .ps-num{color:#3b82d4;}
+.ps-card.orange .ps-num{color:#f59e0b;}
+
+/* ── MODAL ── */
+.modal-bg{position:fixed;inset:0;background:rgba(0,0,0,.4);z-index:1000;display:none;align-items:center;justify-content:center;}
+.modal-bg.open{display:flex;}
+.modal{background:#fff;border-radius:10px;padding:20px;width:360px;box-shadow:0 10px 40px rgba(0,0,0,.2);}
+.modal h3{font-size:15px;font-weight:700;margin-bottom:12px;}
+.modal input[type=text]{width:100%;border:1px solid #e5e7eb;border-radius:6px;padding:7px 10px;font-size:13px;margin-bottom:10px;}
+.modal .time-opts{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.modal .time-opt{padding:4px 11px;border-radius:20px;border:1px solid #e5e7eb;font-size:12px;cursor:pointer;background:#f7f8fa;}
+.modal .time-opt.sel{background:#3b82d4;color:#fff;border-color:#3b82d4;}
+.modal .who-opts{display:flex;gap:6px;margin-bottom:12px;}
+.modal .who-opt{padding:4px 12px;border-radius:20px;border:1px solid #e5e7eb;font-size:12px;cursor:pointer;background:#f7f8fa;}
+.modal .who-opt.sel-eu{background:#3b82d4;color:#fff;border-color:#3b82d4;}
+.modal .who-opt.sel-emp{background:#059669;color:#fff;border-color:#059669;}
+.modal .modal-btns{display:flex;gap:8px;justify-content:flex-end;}
+.modal .modal-btns button{padding:6px 14px;border-radius:6px;border:1px solid #e5e7eb;cursor:pointer;font-size:13px;}
+.modal .modal-btns .ok{background:#3b82d4;color:#fff;border-color:#3b82d4;}
+.modal .modal-btns .ok.green{background:#059669;border-color:#059669;}
+</style>
+</head>
+<body>
+<div class="wrapper">
+<h1 class="no-print">🏠 Calendário de Limpeza & Manutenção — Apartamento 70m²</h1>
+<p class="subtitle no-print">19 Jul 2026 → 05 Jan 2027 · São Paulo · Interativo · Salva no navegador · Imprimível em A4</p>
+
+<!-- ABAS -->
+<div class="tabs no-print">
+  <button class="tab-btn active" onclick="switchTab('limpeza',this)">🧹 Limpeza</button>
+  <button class="tab-btn manut" onclick="switchTab('manutencao',this)">🔧 Manutenção</button>
+  <button class="tab-btn visao" onclick="switchTab('visao',this)">📋 Visão Diarista</button>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ABA LIMPEZA
+══════════════════════════════════════════ -->
+<div class="tab-content active" id="tab-limpeza">
+  <div class="toolbar no-print">
+    <button class="primary" onclick="saveData()">💾 Salvar</button>
+    <button onclick="window.print()">🖨️ Imprimir</button>
+    <button class="danger" onclick="clearAll()">🗑️ Limpar tudo</button>
+    <span class="saved-msg" id="saved-msg">✓ Salvo!</span>
+    <span style="font-size:11px;color:#57606a;margin-left:auto">Arraste tarefas entre dias · ✕ remove · + adiciona</span>
+  </div>
+  <div class="legend no-print">
+    <div class="leg"><div class="dot" style="background:#6d28d9"></div> Diarista Q1</div>
+    <div class="leg"><div class="dot" style="background:#8b5cf6"></div> Diarista Q2</div>
+    <div class="leg"><div class="dot" style="background:#fffbeb;border:1px solid #f59e0b"></div> Feriado</div>
+    <div class="leg"><div class="dot" style="background:#f0fdf4;border:1px solid #86efac"></div> Fim de semana</div>
+    <div class="leg"><div class="dot" style="background:#fdf4ff;border:1px solid #e9d5ff"></div> Academia (Qua/Sex)</div>
+    <div class="leg"><div class="dot" style="background:#fff7ed;border:1px solid #f97316"></div> Catequese (Ter)</div>
+    <div class="leg"><div class="dot" style="background:#22c55e"></div> ⏱ OK</div>
+    <div class="leg"><div class="dot" style="background:#ef4444"></div> ⏱ Acima limite</div>
+    <div class="leg"><span style="font-weight:700;font-size:12px">*</span> Prioridade anti-alérgica</div>
+  </div>
+  <div class="filter-bar no-print" id="filter-bar-responsavel">
+    <span class="filter-label">Por responsável:</span>
+    <button class="fbtn active-all" id="fbtn-all"      onclick="setFilterResp('all')">Todas</button>
+    <button class="fbtn"            id="fbtn-eu"       onclick="setFilterResp('eu')">👤 Minhas</button>
+    <button class="fbtn"            id="fbtn-diarista" onclick="setFilterResp('diarista')">🟣 Diarista</button>
+  </div>
+  <div class="filter-bar no-print" id="filter-bar-cat">
+    <span class="filter-label">Por tema:</span>
+    <button class="fbtn active-all" id="fcat-all" onclick="setFilterCat('all')">Todas</button>
+    <div class="filter-sep"></div>
+    <button class="fbtn" id="fcat-roupas"      onclick="setFilterCat('roupas')">👕 Roupas &amp; Cama</button>
+    <button class="fbtn" id="fcat-cozinha"     onclick="setFilterCat('cozinha')">🍳 Cozinha</button>
+    <button class="fbtn" id="fcat-banheiro"    onclick="setFilterCat('banheiro')">🛁 Banheiro</button>
+    <button class="fbtn" id="fcat-limpeza"     onclick="setFilterCat('limpeza')">🧹 Limpeza geral</button>
+    <button class="fbtn" id="fcat-organizacao" onclick="setFilterCat('organizacao')">📦 Organização</button>
+    <button class="fbtn" id="fcat-plantas"     onclick="setFilterCat('plantas')">🌿 Plantas</button>
+    <button class="fbtn" id="fcat-bemestar"    onclick="setFilterCat('bemestar')">🏃 Bem-estar</button>
+    <button class="fbtn" id="fcat-diaria"      onclick="setFilterCat('diaria')">🏠 Diária</button>
+  </div>
+  <div class="month-nav no-print" id="mnav-limp"></div>
+  <div id="cal-limpeza"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ABA MANUTENÇÃO
+══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-manutencao">
+  <div class="toolbar no-print">
+    <button class="green" onclick="saveData()">💾 Salvar</button>
+    <button onclick="window.print()">🖨️ Imprimir</button>
+    <button class="danger" onclick="clearManut()">🗑️ Limpar manutenção</button>
+    <span class="saved-msg" id="saved-msg-m">✓ Salvo!</span>
+    <span style="font-size:11px;color:#57606a;margin-left:auto">🔵 Eu mesmo · 🟢 Empresa contratada</span>
+  </div>
+
+  <!-- GRÁFICO -->
+  <div class="chart-section no-print" id="chart-section">
+    <h2>📊 Progresso da Manutenção</h2>
+    <div class="progress-summary" id="progress-summary"></div>
+    <div class="chart-wrap" style="margin-top:16px">
+      <div class="chart-box">
+        <h3>Por categoria</h3>
+        <div class="bar-chart" id="chart-categorias"></div>
+      </div>
+      <div class="chart-box">
+        <h3>Por mês</h3>
+        <div class="bar-chart" id="chart-meses"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="legend no-print">
+    <div class="leg"><div class="dot" style="background:#f0fdf4;border:1px solid #059669"></div> Dia com tarefas</div>
+    <div class="leg"><div class="dot" style="background:#dbeafe"></div> 🔵 Eu mesmo</div>
+    <div class="leg"><div class="dot" style="background:#d1fae5"></div> 🟢 Empresa</div>
+  </div>
+  <div class="month-nav green no-print" id="mnav-manut"></div>
+  <div id="cal-manutencao"></div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     ABA VISÃO DIARISTA
+══════════════════════════════════════════ -->
+<div class="tab-content" id="tab-visao">
+  <div class="toolbar no-print">
+    <button onclick="window.print()">🖨️ Imprimir visão</button>
+    <span style="font-size:11px;color:#57606a;margin-left:auto">Análise anual das visitas da diarista · Jul/2026 → Jan/2027</span>
+  </div>
+  <div id="visao-diarista-root"></div>
+</div>
+
+</div><!-- wrapper -->
+
+<!-- MODAL LIMPEZA -->
+<div class="modal-bg" id="modal-bg">
+  <div class="modal">
+    <h3>➕ Nova tarefa — Limpeza</h3>
+    <input type="text" id="modal-input" placeholder="Descrição da tarefa..." />
+    <div style="font-size:12px;color:#57606a;margin-bottom:5px;">Tempo sugerido:</div>
+    <div class="time-opts">
+      <div class="time-opt sel" data-min="15">15 min</div>
+      <div class="time-opt" data-min="30">30 min</div>
+      <div class="time-opt" data-min="45">45 min</div>
+      <div class="time-opt" data-min="60">60 min</div>
+      <div class="time-opt" data-min="0">Sem tempo</div>
+    </div>
+    <div class="modal-btns">
+      <button onclick="closeModal()">Cancelar</button>
+      <button class="ok" onclick="confirmAdd()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL MANUTENÇÃO -->
+<div class="modal-bg" id="modal-bg-m">
+  <div class="modal">
+    <h3>🔧 Nova tarefa — Manutenção</h3>
+    <input type="text" id="modal-input-m" placeholder="Ex: Revisão do gás, limpeza AC..." />
+    <div style="font-size:12px;color:#57606a;margin-bottom:5px;">Responsável:</div>
+    <div class="who-opts">
+      <div class="who-opt sel-eu" id="who-eu" onclick="selectWho('eu')">🔵 Eu mesmo</div>
+      <div class="who-opt" id="who-emp" onclick="selectWho('empresa')">🟢 Empresa</div>
+    </div>
+    <div style="font-size:12px;color:#57606a;margin-bottom:5px;">Tempo estimado:</div>
+    <div class="time-opts" id="time-opts-m">
+      <div class="time-opt sel" data-min="15">15 min</div>
+      <div class="time-opt" data-min="30">30 min</div>
+      <div class="time-opt" data-min="45">45 min</div>
+      <div class="time-opt" data-min="60">60 min</div>
+      <div class="time-opt" data-min="120">2h</div>
+      <div class="time-opt" data-min="0">A definir</div>
+    </div>
+    <div style="font-size:12px;color:#57606a;margin:8px 0 5px;">Categoria:</div>
+    <select id="modal-cat-m" style="width:100%;border:1px solid #e5e7eb;border-radius:6px;padding:6px 10px;font-size:12px;margin-bottom:12px;">
+      <option value="hidraulica">🚿 Hidráulica</option>
+      <option value="eletrica">⚡ Elétrica</option>
+      <option value="climatizacao">❄️ Climatização</option>
+      <option value="estrutura">🏗️ Estrutura</option>
+      <option value="eletrodomesticos">🏠 Eletrodomésticos</option>
+      <option value="outros">📋 Outros</option>
+    </select>
+    <div class="modal-btns">
+      <button onclick="closeModalM()">Cancelar</button>
+      <button class="ok green" onclick="confirmAddM()">Adicionar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ─── UTILS ───────────────────────────────────────────────────────────────────
+const MESES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
+const MESES_PT=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
+const DIAS=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+const START=new Date(2026,6,19), END=new Date(2027,0,5);
+function fmt(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
+function fmtMin(v){if(!v)return'—';const h=Math.floor(v/60),m=v%60;return h>0?h+'h'+(m>0?m+'m':''):v+'min';}
+function isInRange(d){return d>=START&&d<=END;}
+function monthsList(){const l=[];let y=START.getFullYear(),m=START.getMonth();const ey=END.getFullYear(),em=END.getMonth();while(y<ey||(y===ey&&m<=em)){l.push({year:y,month:m});m++;if(m>11){m=0;y++;}}return l;}
+
+// ─── FILTROS ─────────────────────────────────────────────────────────────────
+let activeFilterResp = 'all';
+let activeFilterCat  = 'all';
+
+function applyFilters() {
+  document.querySelectorAll('#cal-limpeza .task-row').forEach(row => {
+    const text = row.dataset.taskText || '';
+    const cat  = row.dataset.taskCat  || 'diaria';
+    const isDiarista = text.includes('[D]');
+    const passResp = activeFilterResp === 'all'
+      || (activeFilterResp === 'diarista' && isDiarista)
+      || (activeFilterResp === 'eu'       && !isDiarista);
+    const passCat = activeFilterCat === 'all' || cat === activeFilterCat;
+    row.classList.toggle('hidden-filter', !(passResp && passCat));
+  });
+}
+
+function setFilterResp(f) {
+  activeFilterResp = f;
+  ['all','eu','diarista'].forEach(id => {
+    const btn = document.getElementById('fbtn-'+id);
+    if (!btn) return;
+    btn.className = 'fbtn' + (f === id ? ' active-'+id : '');
+  });
+  applyFilters();
+}
+
+function setFilterCat(cat) {
+  activeFilterCat = cat;
+  const allBtn = document.getElementById('fcat-all');
+  if (allBtn) { allBtn.className = 'fbtn'+(cat==='all'?' active-all':''); allBtn.style.background=''; allBtn.style.borderColor=''; }
+  Object.keys(TASK_CATS).forEach(k => {
+    const btn = document.getElementById('fcat-'+k);
+    if (!btn) return;
+    if (cat === k) {
+      btn.className = 'fbtn active-cat';
+      btn.style.background = TASK_CATS[k].color;
+      btn.style.borderColor = TASK_CATS[k].color;
+    } else {
+      btn.className = 'fbtn';
+      btn.style.background = '';
+      btn.style.borderColor = '';
+    }
+  });
+  applyFilters();
+}
+
+// ─── ABAS ────────────────────────────────────────────────────────────────────
+function switchTab(id, btn){
+  document.querySelectorAll('.tab-content').forEach(t=>t.classList.remove('active'));
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.remove('active'));
+  document.getElementById('tab-'+id).classList.add('active');
+  btn.classList.add('active');
+  if(id==='manutencao') renderChart();
+  if(id==='visao') renderVisaoDiarista();
+}
+
+// ─── VISÃO DIARISTA ──────────────────────────────────────────────────────────
+function renderVisaoDiarista() {
+  const root = document.getElementById('visao-diarista-root');
+  if (!root) return;
+
+  const DIAS_FULL = ["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
+  const DIAS_FULL_EXT = ["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
+
+  // ── 1. Coletar todas as visitas da diarista no período ──
+  const visitas = Object.entries(diaristaDates)
+    .filter(([d]) => { const dt=new Date(d+'T12:00:00'); return isInRange(dt); })
+    .sort(([a],[b]) => a.localeCompare(b))
+    .map(([dateStr, ordem]) => {
+      const dt = new Date(dateStr+'T12:00:00');
+      const dow = dt.getDay();
+      const tasks = state[dateStr] || baseTasks(dateStr, dow, ordem, false, true, false);
+      const tarefasD = tasks.filter(t=>t.text && t.text.includes('[D]'));
+      const tarefasEu = tasks.filter(t=>!t.text || !t.text.includes('[D]'));
+      const totalMin = tasks.reduce((s,t)=>s+(t.min||0),0);
+      const minD = tarefasD.reduce((s,t)=>s+(t.min||0),0);
+      const minEu = tarefasEu.reduce((s,t)=>s+(t.min||0),0);
+      return { dateStr, dt, dow, ordem, tasks, tarefasD, tarefasEu, totalMin, minD, minEu };
+    });
+
+  // ── 2. Calcular intervalo entre visitas ──
+  visitas.forEach((v,i) => {
+    if (i===0) { v.intervalo = null; return; }
+    const prev = visitas[i-1].dt;
+    const diff = Math.round((v.dt - prev) / (1000*60*60*24));
+    v.intervalo = diff;
+  });
+
+  // ── 3. Mapa de cômodos/áreas por visita ──
+  const COMODOS = [
+    { label:'Pisos',         match: t => t.includes('Pisos') || t.includes('piso') },
+    { label:'Banheiros',     match: t => t.includes('Banheiro') },
+    { label:'Cozinha',       match: t => t.includes('Cozinha') || t.includes('Fogão') || t.includes('Geladeira') || t.includes('coifa') },
+    { label:'Colchões ★',    match: t => t.includes('Colchão') || t.includes('Colchões') || t.includes('cabeceiras') },
+    { label:'Tapete ★',      match: t => t.includes('Tapete') || t.includes('tapete') },
+    { label:'Luminárias ★',  match: t => t.includes('Luminárias') || t.includes('luminária') },
+    { label:'Sacada',        match: t => t.includes('Sacada') || t.includes('sacada') },
+    { label:'Sofá',          match: t => t.includes('Sofá') || t.includes('sofá') },
+    { label:'Rodapés',       match: t => t.includes('Rodapé') || t.includes('Rodapés') },
+    { label:'Janelas',       match: t => t.includes('janela') || t.includes('janelas') || t.includes('Espelhos') },
+    { label:'Guarda-roupas', match: t => t.includes('Guarda-roupa') },
+    { label:'Portas',        match: t => t.includes('Porta') || t.includes('porta') || t.includes('batente') },
+    { label:'Área serviço',  match: t => t.includes('Área serviço') || t.includes('serviço') },
+  ];
+
+  // ── 4. Resumo cards ──
+  const totalVisitas = visitas.length;
+  const q1count = visitas.filter(v=>v.ordem===1).length;
+  const q2count = visitas.filter(v=>v.ordem===2).length;
+  const avgMin = totalVisitas ? Math.round(visitas.reduce((s,v)=>s+v.minD,0)/totalVisitas) : 0;
+  const intervalos = visitas.filter(v=>v.intervalo!==null).map(v=>v.intervalo);
+  const alertaIntervalo = intervalos.filter(i=>i<13||i>16).length;
+
+  // ── 5. Montar HTML ──
+  let html = '';
+
+  // Cards de resumo
+  html += `<div class="vd-section">
+    <h2>📊 Resumo Geral</h2>
+    <div class="vd-summary">
+      <div class="vd-card roxo"><div class="vd-num">${totalVisitas}</div><div class="vd-lbl">Visitas no período</div></div>
+      <div class="vd-card azul"><div class="vd-num">${q1count} / ${q2count}</div><div class="vd-lbl">Q1 (fundo) / Q2 (superfícies)</div></div>
+      <div class="vd-card verde"><div class="vd-num">${fmtMin(avgMin)}</div><div class="vd-lbl">Média de horas da diarista</div></div>
+      <div class="vd-card amber"><div class="vd-num">${alertaIntervalo}</div><div class="vd-lbl">Visitas fora do intervalo 15 dias</div></div>
+    </div>
+  </div>`;
+
+  // Tabela de visitas
+  html += `<div class="vd-section">
+    <h2>📅 Todas as Visitas — Ano Completo</h2>
+    <table class="vd-table">
+      <thead><tr>
+        <th>#</th>
+        <th>Data</th>
+        <th>Dia</th>
+        <th>Tipo</th>
+        <th>Intervalo</th>
+        <th>⏱ Diarista</th>
+        <th>⏱ Eu (prep.)</th>
+        <th>⏱ Total dia</th>
+        <th>Qtd. tarefas</th>
+        <th>Status</th>
+      </tr></thead>
+      <tbody>`;
+
+  visitas.forEach((v, i) => {
+    const dt = v.dt;
+    const dataFmt = dt.getDate().toString().padStart(2,'0') + '/' + String(dt.getMonth()+1).padStart(2,'0') + '/' + dt.getFullYear();
+    const diaSem = DIAS_FULL[v.dow];
+    const tipoHtml = v.ordem===1
+      ? `<span class="vd-badge vd-q1">Q1 — Fundo</span>`
+      : `<span class="vd-badge vd-q2">Q2 — Superfícies</span>`;
+    let intervaloHtml = '—';
+    let statusHtml = '';
+    if (v.intervalo !== null) {
+      const ok = v.intervalo >= 13 && v.intervalo <= 16;
+      const cls = ok ? 'vd-ok' : (v.intervalo < 13 ? 'vd-alert' : 'vd-warn');
+      const icon = ok ? '✓' : (v.intervalo < 13 ? '⚠ curto' : '⚠ longo');
+      intervaloHtml = `<span class="vd-badge ${cls}">${v.intervalo} dias</span>`;
+      statusHtml = `<span class="vd-badge ${cls}">${icon}</span>`;
+    } else {
+      statusHtml = `<span class="vd-badge vd-ok">1ª visita</span>`;
+    }
+    html += `<tr>
+      <td style="color:#57606a;font-weight:700">${i+1}</td>
+      <td style="font-weight:700">${dataFmt}</td>
+      <td>${diaSem}</td>
+      <td>${tipoHtml}</td>
+      <td>${intervaloHtml}</td>
+      <td style="font-weight:700;color:#6d28d9">${fmtMin(v.minD)}</td>
+      <td style="color:#3b82d4">${fmtMin(v.minEu)}</td>
+      <td style="font-weight:700">${fmtMin(v.totalMin)}</td>
+      <td style="text-align:center">${v.tarefasD.length}</td>
+      <td>${statusHtml}</td>
+    </tr>`;
+  });
+
+  html += `</tbody></table></div>`;
+
+  // Heatmap de cobertura de cômodos
+  html += `<div class="vd-section">
+    <h2>🏠 Cobertura de Cômodos por Visita</h2>
+    <p style="font-size:11px;color:#57606a;margin-bottom:10px;">Verde = cômodo coberto nesta visita · Amarelo = normalmente coberto mas ausente · Cinza = não previsto nesta quinzena</p>
+    <div class="vd-heat-wrap">
+    <table class="vd-heat">
+      <thead><tr>
+        <th class="sticky">Cômodo / Área</th>`;
+
+  visitas.forEach((v,i) => {
+    const dataFmt = v.dt.getDate().toString().padStart(2,'0')+'/'+String(v.dt.getMonth()+1).padStart(2,'0');
+    const cls = v.ordem===1 ? 'color:#6d28d9' : 'color:#7c3aed';
+    html += `<th style="${cls}">${dataFmt}<br><span style="font-size:9px">${v.ordem===1?'Q1':'Q2'}</span></th>`;
+  });
+  html += `</tr></thead><tbody>`;
+
+  COMODOS.forEach(com => {
+    html += `<tr><td class="sticky">${com.label}</td>`;
+    visitas.forEach(v => {
+      const covered = v.tarefasD.some(t => com.match(t.text));
+      // determinar se é esperado nesta quinzena
+      const esperado = v.tarefasD.length > 0;
+      if (covered) {
+        html += `<td class="heat-1">✓</td>`;
+      } else if (esperado) {
+        html += `<td class="heat-x" title="Não coberto nesta visita">—</td>`;
+      } else {
+        html += `<td class="heat-0">·</td>`;
+      }
+    });
+    html += `</tr>`;
+  });
+
+  html += `</tbody></table></div></div>`;
+
+
+  root.innerHTML = html;
+}
+
+// ─── ESTADO ──────────────────────────────────────────────────────────────────
+const SK='limpeza_cal_2026', SKM='manut_cal_2026';
+let state={}, stateM={};
+function loadState(){try{const s=localStorage.getItem(SK);if(s)state=JSON.parse(s);}catch(e){state={};} try{const s=localStorage.getItem(SKM);if(s)stateM=JSON.parse(s);}catch(e){stateM={};}}
+function saveData(){localStorage.setItem(SK,JSON.stringify(state));localStorage.setItem(SKM,JSON.stringify(stateM));['saved-msg','saved-msg-m'].forEach(id=>{const m=document.getElementById(id);if(m){m.style.display='inline-block';setTimeout(()=>m.style.display='none',2000);}});}
+function clearAll(){if(confirm('Limpar dados de limpeza?')){localStorage.removeItem(SK);state={};renderLimpeza();}}
+function clearManut(){if(confirm('Limpar dados de manutenção?')){localStorage.removeItem(SKM);stateM={};renderManutencao();renderChart();}}
+
+// ─── FERIADOS ────────────────────────────────────────────────────────────────
+const FERIADOS={"2026-09-07":"Independência","2026-10-12":"N.Sra.Aparecida","2026-11-02":"Finados","2026-11-15":"Proclamação","2026-11-20":"Consciência Negra","2026-12-25":"Natal","2027-01-01":"Ano Novo"};
+const LIMITS={util:60,academia:25,fds_sab:90,fds_dom:40,diarista:480,feriado:20};
+
+// ─── DIARISTA ────────────────────────────────────────────────────────────────
+// Q1/Q2 alterna globalmente: 1ª visita=Q1, 2ª=Q2, 3ª=Q1...
+const diaristaDates={};
+(function(){let d=new Date(2026,6,22);const lim=new Date(2027,1,1);let count=0;while(d<=lim){const key=fmt(d);count++;diaristaDates[key]=(count%2===1)?1:2;d.setDate(d.getDate()+14);}})();
+
+// ─── CATEGORIAS DE TAREFAS ───────────────────────────────────────────────────
+const TASK_CATS = {
+  diaria:      { label:'🏠 Diária',       color:'#6b7280' },
+  roupas:      { label:'👕 Roupas & Cama', color:'#0891b2' },
+  cozinha:     { label:'🍳 Cozinha',       color:'#d97706' },
+  banheiro:    { label:'🛁 Banheiro',      color:'#0d9488' },
+  plantas:     { label:'🌿 Plantas',       color:'#16a34a' },
+  bemestar:    { label:'🏃 Bem-estar',     color:'#7c3aed' },
+  organizacao: { label:'📦 Organização',   color:'#b45309' },
+  limpeza:     { label:'🧹 Limpeza geral', color:'#3b82d4' },
+};
+
+// Função que detecta a categoria de uma tarefa pelo texto
+function detectCat(text) {
+  const t = text.toLowerCase();
+  // "fazer camas" e "lixo" → diária (verificar antes de roupas/cama)
+  if (/^fazer camas?$|^lixo/.test(t.trim())) return 'diaria';
+  // "organizar antes da diarista" → limpeza geral
+  if (/organizar antes da diarista/.test(t)) return 'limpeza';
+  if (/lavar|passar|roupa|cama|toalha|máquina|prog\. máquina|uniforme|passadoria|lençol/.test(t)) return 'roupas';
+  if (/refeição|refeições|louça|fogão|geladeira|micro-ondas|air fryer|forno|bancada|cozinha|coifa|freezer|tempero|mantimento/.test(t)) return 'cozinha';
+  if (/banheiro|vaso|pia|pias|chuveiro|produto.*banh|cestas banh|porta-papel/.test(t)) return 'banheiro';
+  if (/plant|regar|adubar/.test(t)) return 'plantas';
+  if (/atividade física|academia/.test(t)) return 'bemestar';
+  if (/gaveta|armário|sapateira|medicamento|filtro de água|organizar|guardar roupa|baú|prateleira|material escolar|barzinho/.test(t)) return 'organizacao';
+  if (/aspirar|pisos?|rodapé|janela|espelho|sacada|rack|aparador|escritório|área de serviço|varrer|rodo|luminária|colchão|colchões|cabeceira|tapete|sofá|guarda-roupa|porta|batente|calçado|churrasqueira|persiana/.test(t)) return 'limpeza';
+  return 'diaria';
+}
+
+// ─── TAREFAS BASE LIMPEZA ────────────────────────────────────────────────────
+function T(text, min, cls) { return { text, min, cls, cat: detectCat(text) }; }
+
+function baseTasks(dateStr,dow,diaOrdem,isFeriado,isDiarista,isAcademia){
+  const day=new Date(dateStr+'T12:00:00').getDate();
+  if(isFeriado)return[T("Fazer camas",5,""),T("Louça + limpar mesa",10,"ref"),T("Lixo se necessário",5,"")];
+  if(isDiarista){
+    const base=[T("Organizar antes da diarista",20,"")];
+    if(diaOrdem===1)base.push(...[T("[D] Pisos + debaixo móveis",60,"muted"),T("[D] Banheiros completos",70,"muted"),T("[D] Fogão minucioso + coifa",45,"muted"),T("[D] Geladeira + lixeiras",35,"muted"),T("* [D] Colchões (2 lados) + cabeceiras",45,"alergia"),T("* [D] Tapete frente+verso+baixo",25,"alergia"),T("[D] Área serviço + atrás máquina",25,"muted"),T("* [D] Luminárias (3)",25,"alergia"),T("[D] Rack + aparadores + barzinho",20,"muted"),T("[D] Guarda-roupas internos",35,"muted"),T("[D] Portas + batentes (todos)",50,"muted"),T("[D] Cozinha: azulejos+armários+pia",45,"muted")]);
+    else base.push(...[T("[D] Pisos todos os cômodos",60,"muted"),T("[D] Banheiros completos",70,"muted"),T("[D] Sofá completo + almofadas",25,"muted"),T("[D] Sacada + churrasqueira + grades",40,"muted"),T("[D] Rodapés todos os cômodos",55,"muted"),T("[D] Espelhos + janelas",25,"muted"),T("[D] Rack + aparadores + barzinho",20,"muted"),T("[D] Guarda-roupas externos",35,"muted"),T("[D] Tapete: aspiração normal",15,"muted"),T("[D] Cestas banheiros + porta-papéis",10,"muted"),T("[D] Cozinha manutenção + bancadas",30,"muted")]);
+    base.push(T("Lavar toalhas de banho",5,"lav"));
+    if(dow===3)base.push(T("Uniforme João: lavar à mão",15,"unif"));
+    return base;
+  }
+  if(dow===0||dow===6){
+    const base=[T("Fazer camas",10,""),T("Louça + limpar mesa",15,"ref"),T("Lixo se necessário",5,"")];
+    if(dow===6){base.push(T("Sacada + plantas + rodo",15,""),T("Passadoria 15 min",15,""),T("Lavar cama suíte",10,"lav"),T("Uniforme João: lavar à mão",15,"unif"));if(day<=7||(day>14&&day<=21))base.push(T("Limpar calçados (quinzenal)",20,""));}
+    else{base.push(T("Lavar cama quarto João",10,"lav"),T("Prog. máquina (roupas leves)",5,"lav"));if(day<=7)base.push(T("Medicamentos: organizar (c/ João)",15,"mensal"),T("Filtro de água: limpeza",10,"mensal"));}
+    if(dow===6){if(day<=7)base.push(T("Armário de mantimentos",15,"mensal"),T("Filtros ar condicionado",15,"manut"),T("Plantas: adubar + cuidar",15,""));if(day>7&&day<=14)base.push(T("Freezer por dentro",20,"mensal"),T("Churrasqueira: limpar",20,"mensal"),T("Sapateiras (2): limpar+org.",20,"mensal"),T("Barzinho: limpar",10,"mensal"));if(day>14&&day<=21)base.push(T("Gavetas de roupa: organizar",20,"mensal"));if(day>21)base.push(T("Gavetas utensílios cozinha",15,"mensal"),T("Prateleira de temperos",10,"mensal"));}
+    return base;
+  }
+  const base=[T("Refeições + louça",45,"ref"),T("Fazer camas",10,""),T("Vaso sanitário (todos)",10,""),T("Bancadas cozinha + fogão",5,""),T("Verificar produtos banheiros",3,"")];
+  if(isAcademia){if(dow===2)base.push(T("Máquina: roupas pesadas",5,"lav"));if(dow===4)base.push(T("Máquina: panos pequenos",5,"lav"),T("Regar plantas + rodo sacada",10,""),T("Air fryer: deixar bandeja de molho",2,""));base.push(T("Atividade física 1h",60,"ativ"));if(dow===2)base.push(T("Uniforme João: lavar à mão",15,"unif"));return base;}
+  if(dow===1)base.push(T("* Aspirar sala + tapete",15,"alergia"),T("Rack + 4 aparadores: tirar pó",10,""),T("Lavar roupas leves",5,"lav"),...(day<=7||(day>14&&day<=21)?[T("Lavar tapete cozinha",5,"lav")]:[]),T("Uniforme João: lavar à mão",15,"unif"));
+  if(dow===3)base.push(T("Guardar roupas pesadas da ter",10,"lav"),T("Micro-ondas por dentro",5,""),T("Escritório 1: mesa+tela+objetos",20,""),T("Lavar toalhas de banho",5,"lav"),T("Uniforme João: lavar à mão",15,"unif"));
+  if(dow===5){base.push(T("* Aspirar quartos (suíte + João)",15,"alergia"),T("Pias banheiros",15,""),T("Escritório 2: mesa+tela+objetos",20,""),T("Air fryer por dentro",5,""),T("Área de serviço: organizar+varrer",10,""));if(day<=7||(day>14&&day<=21))base.push(T("Gaveta material escolar",15,"mensal"));}
+  return base;
+}
+
+// ─── TAREFAS BASE MANUTENÇÃO ─────────────────────────────────────────────────
+const MANUT_BASE = [
+  // formato: {date, text, who:'eu'|'empresa', cat, min}
+  {date:"2026-08-01",text:"Varais (3): limpar",who:"eu",cat:"estrutura",min:30},
+  {date:"2026-08-01",text:"Cadeiras escritório (3): limpar",who:"eu",cat:"estrutura",min:30},
+  {date:"2026-08-01",text:"Robô aspirador: saco+filtro+escova",who:"eu",cat:"eletrodomesticos",min:20},
+  {date:"2026-08-01",text:"Travesseiros: limpeza minuciosa",who:"eu",cat:"estrutura",min:30},
+  {date:"2026-08-01",text:"Canos: desentupimento preventivo",who:"eu",cat:"hidraulica",min:30},
+  {date:"2026-09-05",text:"Ar condicionado + condensadora: limpeza profissional",who:"empresa",cat:"climatizacao",min:120},
+  {date:"2026-09-05",text:"Armário superior: revisar",who:"eu",cat:"estrutura",min:30},
+  {date:"2026-09-05",text:"Baú de sacolas: limpar",who:"eu",cat:"estrutura",min:20},
+  {date:"2026-09-05",text:"Forno: limpeza profunda",who:"eu",cat:"eletrodomesticos",min:45},
+  {date:"2026-09-05",text:"PlayStation: limpar",who:"eu",cat:"eletrodomesticos",min:20},
+  {date:"2026-09-05",text:"Chuveiros: limpeza minuciosa (vinagre)",who:"eu",cat:"hidraulica",min:45},
+  {date:"2026-09-05",text:"Revisar documentos e contas",who:"eu",cat:"outros",min:60},
+  {date:"2026-09-05",text:"Tomadas e cabos: verificar",who:"eu",cat:"eletrica",min:30},
+  {date:"2026-09-05",text:"Telas TVs e computadores: limpar",who:"eu",cat:"eletrodomesticos",min:20},
+  {date:"2026-09-05",text:"Revisão das portas (dobradiças, maçanetas)",who:"eu",cat:"estrutura",min:30},
+  {date:"2026-09-19",text:"Persianas: limpeza completa (única vez)",who:"eu",cat:"estrutura",min:90},
+  {date:"2026-10-03",text:"Varais (3): limpar",who:"eu",cat:"estrutura",min:30},
+  {date:"2026-10-03",text:"Cadeiras escritório (3): limpar",who:"eu",cat:"estrutura",min:30},
+  {date:"2026-10-03",text:"Robô aspirador: saco+filtro+escova",who:"eu",cat:"eletrodomesticos",min:20},
+  {date:"2026-10-03",text:"Travesseiros: limpeza minuciosa",who:"eu",cat:"estrutura",min:30},
+  {date:"2026-10-03",text:"Canos: desentupimento preventivo",who:"eu",cat:"hidraulica",min:30},
+  {date:"2026-10-03",text:"Lavar tapete da sala",who:"eu",cat:"estrutura",min:30},
+  {date:"2026-11-04",text:"Depósito: limpeza completa (diarista)",who:"eu",cat:"estrutura",min:60},
+  {date:"2026-11-07",text:"Armário superior: revisar",who:"eu",cat:"estrutura",min:30},
+  {date:"2026-11-07",text:"Baú de sacolas: limpar",who:"eu",cat:"estrutura",min:20},
+  {date:"2026-11-07",text:"Forno: limpeza profunda",who:"eu",cat:"eletrodomesticos",min:45},
+  {date:"2026-12-05",text:"Varais (3): limpar",who:"eu",cat:"estrutura",min:30},
+  {date:"2026-12-05",text:"Cadeiras escritório (3): limpar",who:"eu",cat:"estrutura",min:30},
+  {date:"2026-12-05",text:"Robô aspirador: saco+filtro+escova",who:"eu",cat:"eletrodomesticos",min:20},
+  {date:"2026-12-05",text:"Travesseiros: limpeza minuciosa",who:"eu",cat:"estrutura",min:30},
+  {date:"2026-12-05",text:"Canos: desentupimento preventivo",who:"eu",cat:"hidraulica",min:30},
+  {date:"2026-12-05",text:"PlayStation: limpar",who:"eu",cat:"eletrodomesticos",min:20},
+  {date:"2026-12-05",text:"Chuveiros: limpeza minuciosa (vinagre)",who:"eu",cat:"hidraulica",min:45},
+  {date:"2027-01-03",text:"Revisão do gás (mangueira + conexões)",who:"eu",cat:"hidraulica",min:20},
+  {date:"2027-01-03",text:"Revisão elétrica e hidráulica geral",who:"empresa",cat:"eletrica",min:180},
+  {date:"2027-01-03",text:"Revisar documentos e contas",who:"eu",cat:"outros",min:60},
+  {date:"2027-01-03",text:"Tomadas e cabos: verificar",who:"eu",cat:"eletrica",min:30},
+  {date:"2027-01-03",text:"Telas TVs e computadores: limpar",who:"eu",cat:"eletrodomesticos",min:20},
+  {date:"2027-01-03",text:"Revisão das portas",who:"eu",cat:"estrutura",min:30},
+];
+const CAT_LABELS={hidraulica:"🚿 Hidráulica",eletrica:"⚡ Elétrica",climatizacao:"❄️ Climatização",estrutura:"🏗️ Estrutura",eletrodomesticos:"🏠 Eletrodomésticos",outros:"📋 Outros"};
+
+function getManutTasks(dateStr){
+  if(stateM[dateStr]) return stateM[dateStr];
+  return MANUT_BASE.filter(t=>t.date===dateStr).map(t=>({...t}));
+}
+
+// ─── DRAG LIMPEZA ────────────────────────────────────────────────────────────
+let dragDateStr=null,dragIdx=null;
+function onDragStart(e,dateStr,idx){dragDateStr=dateStr;dragIdx=idx;e.currentTarget.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function onDragEnd(e){e.currentTarget.classList.remove('dragging');}
+function onDragOver(e,el){e.preventDefault();el.classList.add('drag-over');}
+function onDragLeave(e,el){el.classList.remove('drag-over');}
+function initDay(dateStr){if(!state[dateStr]){const d=new Date(dateStr+'T12:00:00');const dow=d.getDay();const dO=diaristaDates[dateStr]||1;const iF=!!FERIADOS[dateStr];const iD=!!diaristaDates[dateStr];const iA=(dow===2||dow===4)&&!iD&&!iF;state[dateStr]=JSON.parse(JSON.stringify(baseTasks(dateStr,dow,dO,iF,iD,iA)));}}
+function onDrop(e,tgt,el){e.preventDefault();el.classList.remove('drag-over');if(dragDateStr===tgt)return;initDay(dragDateStr);initDay(tgt);const task=state[dragDateStr].splice(dragIdx,1)[0];state[tgt].push(task);saveData();renderLimpeza();}
+
+function deleteTask(dateStr,idx){initDay(dateStr);state[dateStr].splice(idx,1);saveData();renderLimpeza();}
+function toggleCheck(dateStr,idx,val){initDay(dateStr);state[dateStr][idx]._done=val;saveData();}
+
+// ─── DRAG MANUTENÇÃO ─────────────────────────────────────────────────────────
+let dragMDateStr=null,dragMIdx=null;
+function onDragStartM(e,dateStr,idx){dragMDateStr=dateStr;dragMIdx=idx;e.currentTarget.classList.add('dragging');e.dataTransfer.effectAllowed='move';}
+function onDropM(e,tgt,el){e.preventDefault();el.classList.remove('drag-over');if(dragMDateStr===tgt)return;initDayM(dragMDateStr);initDayM(tgt);const task=stateM[dragMDateStr].splice(dragMIdx,1)[0];stateM[tgt].push(task);saveData();renderManutencao();renderChart();}
+function initDayM(dateStr){if(!stateM[dateStr])stateM[dateStr]=JSON.parse(JSON.stringify(getManutTasks(dateStr)));}
+function deleteTaskM(dateStr,idx){initDayM(dateStr);stateM[dateStr].splice(idx,1);saveData();renderManutencao();renderChart();}
+function toggleCheckM(dateStr,idx,val){initDayM(dateStr);stateM[dateStr][idx]._done=val;saveData();renderChart();}
+
+// ─── MODAIS LIMPEZA ──────────────────────────────────────────────────────────
+let modalDateStr=null,selectedMin=15;
+document.querySelectorAll('#modal-bg .time-opt').forEach(o=>o.addEventListener('click',()=>{selectedMin=parseInt(o.dataset.min);document.querySelectorAll('#modal-bg .time-opt').forEach(x=>x.classList.remove('sel'));o.classList.add('sel');}));
+function openModal(dateStr){modalDateStr=dateStr;selectedMin=15;document.getElementById('modal-input').value='';document.querySelectorAll('#modal-bg .time-opt').forEach((o,i)=>o.classList.toggle('sel',i===0));document.getElementById('modal-bg').classList.add('open');setTimeout(()=>document.getElementById('modal-input').focus(),50);}
+function closeModal(){document.getElementById('modal-bg').classList.remove('open');}
+function confirmAdd(){const txt=document.getElementById('modal-input').value.trim();if(!txt){closeModal();return;}initDay(modalDateStr);state[modalDateStr].push({text:txt,min:selectedMin,cls:""});saveData();renderLimpeza();closeModal();}
+document.getElementById('modal-input').addEventListener('keydown',e=>{if(e.key==='Enter')confirmAdd();if(e.key==='Escape')closeModal();});
+
+// ─── MODAIS MANUTENÇÃO ───────────────────────────────────────────────────────
+let modalMDateStr=null,selectedMinM=15,selectedWho='eu';
+document.querySelectorAll('#time-opts-m .time-opt').forEach(o=>o.addEventListener('click',()=>{selectedMinM=parseInt(o.dataset.min);document.querySelectorAll('#time-opts-m .time-opt').forEach(x=>x.classList.remove('sel'));o.classList.add('sel');}));
+function selectWho(who){selectedWho=who;document.getElementById('who-eu').className='who-opt'+(who==='eu'?' sel-eu':'');document.getElementById('who-emp').className='who-opt'+(who==='empresa'?' sel-emp':'');}
+function openModalM(dateStr){modalMDateStr=dateStr;selectedMinM=15;selectedWho='eu';document.getElementById('modal-input-m').value='';document.querySelectorAll('#time-opts-m .time-opt').forEach((o,i)=>o.classList.toggle('sel',i===0));selectWho('eu');document.getElementById('modal-bg-m').classList.add('open');setTimeout(()=>document.getElementById('modal-input-m').focus(),50);}
+function closeModalM(){document.getElementById('modal-bg-m').classList.remove('open');}
+function confirmAddM(){const txt=document.getElementById('modal-input-m').value.trim();if(!txt){closeModalM();return;}const cat=document.getElementById('modal-cat-m').value;initDayM(modalMDateStr);stateM[modalMDateStr].push({text:txt,min:selectedMinM,who:selectedWho,cat,_done:false});saveData();renderManutencao();renderChart();closeModalM();}
+document.getElementById('modal-input-m').addEventListener('keydown',e=>{if(e.key==='Enter')confirmAddM();if(e.key==='Escape')closeModalM();});
+
+// ─── GRÁFICO ─────────────────────────────────────────────────────────────────
+function renderChart(){
+  // coletar todos os tasks de manutenção
+  const allTasks=[];
+  monthsList().forEach(({year,month})=>{
+    const dim=new Date(year,month+1,0).getDate();
+    for(let day=1;day<=dim;day++){
+      const dt=new Date(year,month,day);
+      if(!isInRange(dt))continue;
+      const dateStr=fmt(dt);
+      const tasks=getManutTasks(dateStr);
+      tasks.forEach(t=>allTasks.push({...t,dateStr,month}));
+    }
+  });
+
+  const total=allTasks.length;
+  const done=allTasks.filter(t=>t._done).length;
+  const eu=allTasks.filter(t=>t.who==='eu').length;
+  const emp=allTasks.filter(t=>t.who==='empresa').length;
+  const pct=total>0?Math.round(done/total*100):0;
+
+  // summary cards
+  const ps=document.getElementById('progress-summary');
+  ps.innerHTML=`
+    <div class="ps-card green"><div class="ps-num">${pct}%</div><div class="ps-label">Concluído</div></div>
+    <div class="ps-card blue"><div class="ps-num">${done}/${total}</div><div class="ps-label">Tarefas feitas</div></div>
+    <div class="ps-card orange"><div class="ps-num">${total-done}</div><div class="ps-label">Pendentes</div></div>
+  `;
+
+  // por categoria
+  const catData={};
+  allTasks.forEach(t=>{if(!catData[t.cat])catData[t.cat]={total:0,done:0};catData[t.cat].total++;if(t._done)catData[t.cat].done++;});
+  const catEl=document.getElementById('chart-categorias');
+  catEl.innerHTML='';
+  Object.entries(catData).forEach(([cat,d])=>{
+    const pct=d.total>0?Math.round(d.done/d.total*100):0;
+    catEl.innerHTML+=`<div class="bc-row">
+      <div class="bc-label">${CAT_LABELS[cat]||cat}</div>
+      <div class="bc-bar-wrap">
+        <div class="bc-bar done" style="width:${pct}%"></div>
+        <span class="bc-val">${d.done}/${d.total}</span>
+      </div>
+    </div>`;
+  });
+
+  // por mês
+  const mesData={};
+  allTasks.forEach(t=>{const mk=t.dateStr.substring(0,7);if(!mesData[mk])mesData[mk]={total:0,done:0,label:''};mesData[mk].total++;if(t._done)mesData[mk].done++;const d=new Date(t.dateStr+'T12:00:00');mesData[mk].label=MESES_PT[d.getMonth()]+'/'+String(d.getFullYear()).slice(2);});
+  const mesEl=document.getElementById('chart-meses');
+  mesEl.innerHTML='';
+  Object.entries(mesData).sort().forEach(([,d])=>{
+    const pct=d.total>0?Math.round(d.done/d.total*100):0;
+    mesEl.innerHTML+=`<div class="bc-row">
+      <div class="bc-label">${d.label}</div>
+      <div class="bc-bar-wrap">
+        <div class="bc-bar done" style="width:${pct}%"></div>
+        <span class="bc-val">${d.done}/${d.total}</span>
+      </div>
+    </div>`;
+  });
+}
+
+// ─── RENDER LIMPEZA ──────────────────────────────────────────────────────────
+function renderLimpeza(){
+  const nav=document.getElementById('mnav-limp'),root=document.getElementById('cal-limpeza');
+  nav.innerHTML='';root.innerHTML='';
+  // filtro será reaplicado ao fim do render
+  monthsList().forEach(({year,month})=>{
+    const moId='l'+year+'_'+month;
+    const a=document.createElement('a');a.href='#'+moId;a.textContent=MESES[month].substring(0,3)+'/'+String(year).slice(2);nav.appendChild(a);
+    const sec=document.createElement('div');sec.className='month-section';sec.id=moId;
+    const hdr=document.createElement('div');hdr.className='month-header';hdr.innerHTML=MESES[month]+' <span class="year-tag">'+year+'</span>';sec.appendChild(hdr);
+    const grid=document.createElement('div');grid.className='cal-grid';
+    DIAS.forEach((d,i)=>{const h=document.createElement('div');h.className='dow-hdr'+(i===0||i===6?' wk':'');h.textContent=d;grid.appendChild(h);});
+    const firstDow=new Date(year,month,1).getDay(),dim=new Date(year,month+1,0).getDate();
+    for(let i=0;i<firstDow;i++){const e=document.createElement('div');e.className='day empty';grid.appendChild(e);}
+    for(let day=1;day<=dim;day++){
+      const dt=new Date(year,month,day),dateStr=fmt(dt),dow=dt.getDay();
+      const inRange=isInRange(dt),isDiarista=!!diaristaDates[dateStr]&&inRange,diaOrdem=diaristaDates[dateStr]||1;
+      const isFeriado=!!FERIADOS[dateStr]&&inRange,isWE=dow===0||dow===6;
+      const isAcademia=(dow===3||dow===5)&&inRange&&!isDiarista&&!isFeriado;
+      const isCatequese=(dow===2)&&inRange&&!isDiarista&&!isFeriado;
+      const cell=document.createElement('div');cell.className='day';
+      if(!inRange)cell.classList.add('fora');else if(isDiarista)cell.classList.add(diaOrdem===1?'d1':'d2');else if(isFeriado)cell.classList.add('feriado');else if(isWE)cell.classList.add('fds');else if(isAcademia)cell.classList.add('academia');else if(isCatequese)cell.classList.add('catequese');
+      if(inRange){cell.addEventListener('dragover',e=>onDragOver(e,cell));cell.addEventListener('dragleave',e=>onDragLeave(e,cell));cell.addEventListener('drop',e=>onDrop(e,dateStr,cell));}
+      const dn=document.createElement('div');dn.className='day-num';dn.innerHTML='<span>'+day+'</span>';
+      if(inRange){if(isDiarista)dn.innerHTML+='<span class="bdg '+(diaOrdem===1?'bdg-d1':'bdg-d2')+'">'+(diaOrdem===1?'Diarista Q1':'Diarista Q2')+'</span>';else if(isFeriado)dn.innerHTML+='<span class="bdg bdg-f">Feriado</span>';else if(isAcademia)dn.innerHTML+='<span class="bdg bdg-ac">Academia</span>';else if(isCatequese)dn.innerHTML+='<span class="bdg bdg-cat">Catequese</span>';else if(isWE)dn.innerHTML+='<span class="bdg bdg-fs">FDS</span>';}
+      cell.appendChild(dn);
+      if(isFeriado&&inRange){const fn=document.createElement('span');fn.className='fn';fn.textContent=FERIADOS[dateStr];cell.appendChild(fn);}
+      if(inRange){
+        const tasks=(state[dateStr]||baseTasks(dateStr,dow,diaOrdem,isFeriado,isDiarista,isAcademia||isCatequese));
+        let totalMin=0,minD=0,minE=0;
+        tasks.forEach(t=>{if(t.min){totalMin+=t.min;if(isDiarista&&t.text&&t.text.includes('[D]'))minD+=t.min;else if(isDiarista)minE+=t.min;}});
+        let limit=LIMITS.util;
+        if(isDiarista)limit=LIMITS.diarista;else if(isFeriado)limit=LIMITS.feriado;else if(isAcademia)limit=LIMITS.academia;else if(isCatequese)limit=LIMITS.academia;else if(dow===6)limit=LIMITS.fds_sab;else if(dow===0)limit=LIMITS.fds_dom;
+        const tipLabel=isDiarista?'Limite: 8h (diarista)':isFeriado?'Limite: 20min (feriado)':(isAcademia||isCatequese)?'Limite: 25min (academia/catequese)':dow===6?'Limite: 1h30 (sábado)':dow===0?'Limite: 40min (domingo)':'Limite: 60min (dia útil)';
+        // topo — Total sempre primeiro, subtotais abaixo nos dias de diarista
+        const topWrap=document.createElement('div');topWrap.className='total-top';
+        const ttT=document.createElement('span');ttT.className='tt tt-total';ttT.textContent='⏱ Total: '+fmtMin(totalMin);ttT.classList.add(totalMin<=limit?'ok':'over');ttT.dataset.tip=tipLabel;topWrap.appendChild(ttT);
+        if(isDiarista){
+          const ttD=document.createElement('span');ttD.className='tt tt-diarista';ttD.textContent='🟣 Diarista: '+fmtMin(minD);topWrap.appendChild(ttD);
+          const ttE=document.createElement('span');ttE.className='tt tt-eu';ttE.textContent='🔵 Eu: '+fmtMin(minE);topWrap.appendChild(ttE);
+        }
+        cell.appendChild(topWrap);
+        tasks.forEach((t,idx)=>{
+          const taskCat = t.cat || detectCat(t.text||'');
+          const catInfo = TASK_CATS[taskCat] || TASK_CATS.diaria;
+          const row=document.createElement('div');row.className='task-row';row.draggable=true;
+          row.dataset.taskText = t.text||'';
+          row.dataset.taskCat  = taskCat;
+          row.addEventListener('dragstart',e=>onDragStart(e,dateStr,idx));row.addEventListener('dragend',e=>onDragEnd(e));
+          const uid=dateStr+'_'+idx;
+          const cb=document.createElement('input');cb.type='checkbox';cb.id='cb_'+uid;cb.checked=!!t._done;
+          const dot=document.createElement('span');dot.className='cat-dot no-print';dot.style.background=catInfo.color;dot.title=catInfo.label;
+          const lb=document.createElement('label');lb.htmlFor='cb_'+uid;lb.className=t.cls||'';lb.textContent=t.text;
+          if(t._done)lb.style.textDecoration='line-through';
+          cb.addEventListener('change',e=>{toggleCheck(dateStr,idx,e.target.checked);lb.style.textDecoration=e.target.checked?'line-through':'';});
+          const ms=document.createElement('span');ms.className='t-min';ms.textContent=t.min?t.min+'m':'';
+          const del=document.createElement('button');del.className='del-btn no-print';del.textContent='✕';
+          del.addEventListener('click',e=>{e.stopPropagation();deleteTask(dateStr,idx);});
+          row.appendChild(cb);row.appendChild(dot);row.appendChild(lb);row.appendChild(ms);row.appendChild(del);cell.appendChild(row);
+        });
+        const addBtn=document.createElement('div');addBtn.className='add-task-btn no-print';addBtn.textContent='+ adicionar tarefa';addBtn.addEventListener('click',()=>openModal(dateStr));cell.appendChild(addBtn);
+        const printBtn=document.createElement('button');printBtn.className='print-day-btn no-print';printBtn.textContent='🖨️';printBtn.title='Imprimir este dia';printBtn.addEventListener('click',e=>{e.stopPropagation();printDay(dateStr,isDiarista,diaOrdem);});cell.appendChild(printBtn);
+      }
+      grid.appendChild(cell);
+    }
+    sec.appendChild(grid);root.appendChild(sec);
+  });
+  // reaplicar filtros ativos após re-render
+  if(activeFilterResp !== 'all' || activeFilterCat !== 'all') applyFilters();
+}
+
+// ─── RENDER MANUTENÇÃO ───────────────────────────────────────────────────────
+function renderManutencao(){
+  const nav=document.getElementById('mnav-manut'),root=document.getElementById('cal-manutencao');
+  nav.innerHTML='';root.innerHTML='';
+  monthsList().forEach(({year,month})=>{
+    const moId='m'+year+'_'+month;
+    const a=document.createElement('a');a.href='#'+moId;a.textContent=MESES[month].substring(0,3)+'/'+String(year).slice(2);nav.appendChild(a);
+    const sec=document.createElement('div');sec.className='month-section';sec.id=moId;
+    const hdr=document.createElement('div');hdr.className='month-header';hdr.innerHTML=MESES[month]+' <span class="year-tag">'+year+'</span>';sec.appendChild(hdr);
+    const grid=document.createElement('div');grid.className='cal-grid';
+    DIAS.forEach((d,i)=>{const h=document.createElement('div');h.className='dow-hdr'+(i===0||i===6?' wk':'');h.textContent=d;grid.appendChild(h);});
+    const firstDow=new Date(year,month,1).getDay(),dim=new Date(year,month+1,0).getDate();
+    for(let i=0;i<firstDow;i++){const e=document.createElement('div');e.className='mday empty';grid.appendChild(e);}
+    for(let day=1;day<=dim;day++){
+      const dt=new Date(year,month,day),dateStr=fmt(dt),dow=dt.getDay();
+      const inRange=isInRange(dt);
+      const tasks=getManutTasks(dateStr);
+      const cell=document.createElement('div');cell.className='mday';
+      if(!inRange)cell.classList.add('fora');else if(tasks.length>0)cell.classList.add('has-tasks');
+      if(inRange){cell.addEventListener('dragover',e=>onDragOver(e,cell));cell.addEventListener('dragleave',e=>onDragLeave(e,cell));cell.addEventListener('drop',e=>onDropM(e,dateStr,cell));}
+      const dn=document.createElement('div');dn.className='day-num';dn.innerHTML='<span>'+day+'</span>';
+      // badges responsável
+      if(inRange&&tasks.length>0){
+        const hasEu=tasks.some(t=>t.who==='eu');
+        const hasEmp=tasks.some(t=>t.who==='empresa');
+        if(hasEu)dn.innerHTML+='<span class="bdg bdg-eu">🔵 Eu</span>';
+        if(hasEmp)dn.innerHTML+='<span class="bdg bdg-emp">🟢 Empresa</span>';
+      }
+      cell.appendChild(dn);
+      if(inRange&&tasks.length>0){
+        // total no topo
+        let totalMin=0,doneCount=0;
+        tasks.forEach(t=>{if(t.min)totalMin+=t.min;if(t._done)doneCount++;});
+        const topWrap=document.createElement('div');topWrap.className='total-top';
+        const ttT=document.createElement('span');ttT.className='tt tt-total';
+        ttT.textContent='⏱ '+fmtMin(totalMin)+' · '+doneCount+'/'+tasks.length;
+        ttT.classList.add(doneCount===tasks.length&&tasks.length>0?'ok':'over');
+        topWrap.appendChild(ttT);cell.appendChild(topWrap);
+
+        tasks.forEach((t,idx)=>{
+          const row=document.createElement('div');row.className='task-row'+(t.who==='empresa'?' empresa':'');row.draggable=true;
+          row.addEventListener('dragstart',e=>onDragStartM(e,dateStr,idx));row.addEventListener('dragend',e=>onDragEnd(e));
+          const uid='m'+dateStr+'_'+idx;
+          const cb=document.createElement('input');cb.type='checkbox';cb.id='cb_'+uid;cb.checked=!!t._done;
+          const lb=document.createElement('label');lb.htmlFor='cb_'+uid;lb.className=t.who==='empresa'?'empresa':'manut';lb.textContent=t.text;
+          if(t._done)lb.style.textDecoration='line-through';
+          cb.addEventListener('change',e=>{toggleCheckM(dateStr,idx,e.target.checked);lb.style.textDecoration=e.target.checked?'line-through':'';});
+          const who=document.createElement('span');who.className='t-who '+(t.who==='empresa'?'emp':'eu');who.textContent=t.who==='empresa'?'Emp.':'Eu';
+          const ms=document.createElement('span');ms.className='t-min';ms.textContent=t.min?t.min+'m':'';
+          const del=document.createElement('button');del.className='del-btn no-print';del.textContent='✕';
+          del.addEventListener('click',e=>{e.stopPropagation();deleteTaskM(dateStr,idx);});
+          row.appendChild(cb);row.appendChild(lb);row.appendChild(who);row.appendChild(ms);row.appendChild(del);cell.appendChild(row);
+        });
+      }
+      if(inRange){
+        const addBtn=document.createElement('div');addBtn.className='add-task-btn no-print';addBtn.textContent='+ adicionar manutenção';addBtn.addEventListener('click',()=>openModalM(dateStr));cell.appendChild(addBtn);
+      }
+      grid.appendChild(cell);
+    }
+    sec.appendChild(grid);root.appendChild(sec);
+  });
+}
+
+// ─── IMPRIMIR DIA ─────────────────────────────────────────────────────────────
+function printDay(dateStr, isDiarista, diaOrdem) {
+  const dt = new Date(dateStr + 'T12:00:00');
+  const dow = dt.getDay();
+  const isFeriado = !!FERIADOS[dateStr];
+  const isAcademia = (dow===2||dow===4) && !isDiarista && !isFeriado;
+  const tasks = state[dateStr] || baseTasks(dateStr, dow, diaOrdem, isFeriado, isDiarista, isAcademia);
+
+  const DIAS_FULL = ["Domingo","Segunda-feira","Terça-feira","Quarta-feira","Quinta-feira","Sexta-feira","Sábado"];
+  const dataFmt = dt.getDate() + ' de ' + MESES[dt.getMonth()] + ' de ' + dt.getFullYear();
+  const diaNome = DIAS_FULL[dow] + ', ' + dataFmt;
+  const badge = isDiarista ? (diaOrdem===1 ? 'Diarista — Fundo (Q1)' : 'Diarista — Superfícies (Q2)') : '';
+
+  // separar tarefas: diarista vs eu (só para dias de diarista)
+  const tarefasDiarista = isDiarista ? tasks.filter(t => t.text && t.text.includes('[D]')) : [];
+  const tarefasEu = isDiarista ? tasks.filter(t => !t.text || !t.text.includes('[D]')) : tasks;
+
+  function buildRows(list, showTime) {
+    return list.map(t => {
+      const label = t.text.replace(/^\[D\] /,'').replace(/^\* /,'★ ');
+      const mins = t.min ? '<span style="font-size:13px;color:#888;margin-left:8px;">' + t.min + 'min</span>' : '';
+      return `<tr>
+        <td style="width:38px;text-align:center;padding:10px 4px;border-bottom:1px solid #e5e7eb;">
+          <span style="display:inline-block;width:22px;height:22px;border:2px solid #555;border-radius:4px;"></span>
+        </td>
+        <td style="padding:10px 6px;font-size:15px;border-bottom:1px solid #e5e7eb;line-height:1.4;">
+          ${label}${mins}
+        </td>
+      </tr>`;
+    }).join('');
+  }
+
+  let secaoDiarista = '';
+  if (isDiarista && tarefasDiarista.length > 0) {
+    secaoDiarista = `
+      <tr><td colspan="2" style="padding:14px 4px 4px;font-size:12px;font-weight:700;color:#6d28d9;letter-spacing:.5px;text-transform:uppercase;border-bottom:2px solid #6d28d9;">
+        Tarefas da Diarista
+      </td></tr>
+      ${buildRows(tarefasDiarista, true)}
+      <tr><td colspan="2" style="padding:14px 4px 4px;font-size:12px;font-weight:700;color:#2563eb;letter-spacing:.5px;text-transform:uppercase;border-bottom:2px solid #2563eb;">
+        Minhas tarefas
+      </td></tr>
+      ${buildRows(tarefasEu, true)}`;
+  } else {
+    secaoDiarista = buildRows(tarefasEu, true);
+  }
+
+  // calcular totais
+  let totalMin = 0, minD = 0, minEu = 0;
+  tasks.forEach(t => {
+    if (t.min) {
+      totalMin += t.min;
+      if (isDiarista && t.text && t.text.includes('[D]')) minD += t.min; else if (isDiarista) minEu += t.min;
+    }
+  });
+  const totalStr = isDiarista
+    ? `Total: ${fmtMin(totalMin)} &nbsp;|&nbsp; Diarista: ${fmtMin(minD)} &nbsp;|&nbsp; Eu: ${fmtMin(minEu)}`
+    : `Total estimado: ${fmtMin(totalMin)}`;
+
+  const rodape = badge ? `<p style="margin:0;font-size:13px;font-weight:700;color:#6d28d9;">${badge}</p>` : '';
+  const notaFinal = isDiarista
+    ? `<p style="margin-top:24px;font-size:12px;color:#888;border-top:1px solid #e5e7eb;padding-top:10px;">★ = tarefa anti-alérgica prioritária &nbsp;·&nbsp; [D] removido para facilitar leitura</p>`
+    : `<p style="margin-top:24px;font-size:12px;color:#888;border-top:1px solid #e5e7eb;padding-top:10px;">★ = tarefa anti-alérgica prioritária</p>`;
+
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+  <title>Limpeza — ${dataFmt}</title>
+  <style>
+    @page{size:A4;margin:18mm 16mm 18mm 16mm;}
+    *{box-sizing:border-box;margin:0;padding:0;}
+    body{font-family:"Segoe UI",Arial,sans-serif;font-size:15px;color:#1f2328;background:#fff;}
+    .header{border-bottom:3px solid #1f2328;padding-bottom:10px;margin-bottom:16px;}
+    .header h1{font-size:20px;font-weight:700;margin-bottom:3px;}
+    .header .sub{font-size:13px;color:#555;}
+    .totais{font-size:12px;color:#555;margin-top:5px;}
+    table{width:100%;border-collapse:collapse;}
+    @media print{button{display:none!important;}}
+  </style>
+  </head><body>
+  <div class="header">
+    <h1>🏠 Checklist de Limpeza</h1>
+    <p class="sub">${diaNome}</p>
+    ${rodape}
+    <p class="totais">${totalStr}</p>
+  </div>
+  <table>${secaoDiarista}</table>
+  ${notaFinal}
+  <p style="margin-top:32px;font-size:11px;color:#bbb;text-align:center;border-top:1px solid #f0f0f0;padding-top:8px;">Calendário de Limpeza — Apartamento 70m²</p>
+  <script>window.onload=()=>window.print();<\/script>
+  </body></html>`;
+
+  const win = window.open('', '_blank', 'width=800,height=900');
+  win.document.write(html);
+  win.document.close();
+}
+
+// ─── INIT ────────────────────────────────────────────────────────────────────
+loadState();
+renderLimpeza();
+renderManutencao();
+renderChart();
+</script>
+</body>
+</html>
