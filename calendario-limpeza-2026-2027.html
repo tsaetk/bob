@@ -2,6 +2,7 @@
 <html lang="pt-BR">
 <head>
 <meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Calendário de Limpeza & Manutenção 2026–2027</title>
 <style>
 @media print {
@@ -196,6 +197,69 @@ h1{font-size:20px;font-weight:700;margin-bottom:2px;}
 /* dot de categoria na task-row */
 .cat-dot{width:7px;height:7px;border-radius:50%;flex-shrink:0;display:inline-block;}
 
+/* ── GAVETA MOBILE ── */
+.drawer-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.45);z-index:500;}
+.drawer-bg.open{display:block;}
+.drawer{position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:16px 16px 0 0;padding:0 0 env(safe-area-inset-bottom);max-height:82vh;overflow-y:auto;z-index:501;transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.2,1);}
+.drawer.open{transform:translateY(0);}
+.drawer-handle{width:40px;height:4px;background:#e5e7eb;border-radius:2px;margin:10px auto 0;}
+.drawer-header{padding:12px 16px 8px;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between;gap:8px;position:sticky;top:0;background:#fff;z-index:1;}
+.drawer-title{font-size:15px;font-weight:700;flex:1;}
+.drawer-close{font-size:20px;color:#57606a;background:none;border:none;cursor:pointer;padding:0 4px;line-height:1;}
+.drawer-body{padding:10px 16px 20px;}
+.drawer-section-title{font-size:10px;font-weight:700;color:#57606a;letter-spacing:.5px;text-transform:uppercase;margin:12px 0 6px;}
+.drawer-task{display:flex;align-items:center;gap:10px;padding:10px 0;border-bottom:1px solid #f3f4f6;}
+.drawer-task:last-child{border-bottom:none;}
+.drawer-task input[type=checkbox]{width:20px;height:20px;flex-shrink:0;cursor:pointer;accent-color:#7c5cd8;}
+.drawer-task label{font-size:14px;flex:1;cursor:pointer;line-height:1.35;}
+.drawer-task .dt-min{font-size:12px;color:#57606a;white-space:nowrap;}
+.drawer-task .dt-dot{width:9px;height:9px;border-radius:50%;flex-shrink:0;}
+.drawer-totais{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
+.drawer-totais .tt{font-size:11px;padding:3px 9px;}
+
+/* ── MOBILE ── */
+@media (max-width:600px){
+  .wrapper{padding:8px 4px 80px;}
+  h1{font-size:16px;}
+  .subtitle{font-size:11px;}
+  .tabs{overflow-x:auto;-webkit-overflow-scrolling:touch;}
+  .tab-btn{padding:8px 12px;font-size:12px;white-space:nowrap;}
+  .toolbar{padding:6px 8px;gap:6px;}
+  .toolbar button{font-size:11px;padding:5px 9px;}
+  .toolbar span{display:none;}
+  .filter-bar{padding:6px 8px;gap:5px;}
+  .filter-bar .filter-label{font-size:10px;}
+  .fbtn{font-size:10px;padding:3px 8px;}
+  .filter-sep{display:none;}
+  .month-nav{gap:3px;}
+  .month-nav a{font-size:10px;padding:2px 5px;}
+  .month-section{padding:8px 4px;}
+  .month-header{font-size:13px;}
+  /* grade compacta — só mostra número + cor, sem tarefas */
+  .cal-grid{gap:2px;}
+  .day{min-height:44px;padding:3px;cursor:pointer;}
+  .day .total-top,.day .task-row,.day .add-task-btn,.day .print-day-btn,.day .fn{display:none!important;}
+  .day-num{font-size:11px;flex-direction:column;align-items:flex-start;gap:1px;}
+  .bdg{font-size:7px;padding:1px 3px;}
+  .dow-hdr{font-size:9px;}
+  /* indicador de quantidade de tarefas */
+  .day .mob-count{display:flex!important;font-size:8px;color:#57606a;font-weight:600;margin-top:1px;}
+  /* manutenção mobile */
+  .mday{min-height:36px;padding:3px;cursor:pointer;}
+  .mday .total-top,.mday .task-row,.mday .add-task-btn{display:none!important;}
+  /* legenda compacta */
+  .legend{gap:4px;}
+  .leg{font-size:10px;}
+  /* gráfico */
+  .chart-wrap{grid-template-columns:1fr;}
+  .vd-summary{grid-template-columns:1fr 1fr;}
+  .progress-summary{grid-template-columns:1fr 1fr;}
+}
+@media (min-width:601px){
+  .mob-count{display:none;}
+  .drawer-bg,.drawer{display:none!important;}
+}
+
 /* ── GRÁFICO ── */
 .chart-section{background:#fff;border:1px solid #e5e7eb;border-radius:8px;padding:16px;margin-bottom:24px;}
 .chart-section h2{font-size:15px;font-weight:700;margin-bottom:14px;}
@@ -296,6 +360,17 @@ h1{font-size:20px;font-weight:700;margin-bottom:2px;}
   </div>
   <div class="month-nav no-print" id="mnav-limp"></div>
   <div id="cal-limpeza"></div>
+</div>
+
+<!-- GAVETA MOBILE -->
+<div class="drawer-bg" id="drawer-bg" onclick="closeDrawer()"></div>
+<div class="drawer" id="drawer">
+  <div class="drawer-handle"></div>
+  <div class="drawer-header">
+    <span class="drawer-title" id="drawer-title"></span>
+    <button class="drawer-close" onclick="closeDrawer()">×</button>
+  </div>
+  <div class="drawer-body" id="drawer-body"></div>
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -413,6 +488,93 @@ function fmt(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0'
 function fmtMin(v){if(!v)return'—';const h=Math.floor(v/60),m=v%60;return h>0?h+'h'+(m>0?m+'m':''):v+'min';}
 function isInRange(d){return d>=START&&d<=END;}
 function monthsList(){const l=[];let y=START.getFullYear(),m=START.getMonth();const ey=END.getFullYear(),em=END.getMonth();while(y<ey||(y===ey&&m<=em)){l.push({year:y,month:m});m++;if(m>11){m=0;y++;}}return l;}
+
+// ─── GAVETA MOBILE ───────────────────────────────────────────────────────────
+const DIAS_FULL_MOB=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
+function openDrawer(dateStr, isDiarista, diaOrdem, isFeriado, isAcademia, isCatequese) {
+  const dt = new Date(dateStr+'T12:00:00');
+  const dow = dt.getDay();
+  const dataFmt = DIAS_FULL_MOB[dow]+', '+dt.getDate()+'/'+String(dt.getMonth()+1).padStart(2,'0');
+  const tasks = state[dateStr] || baseTasks(dateStr, dow, diaOrdem, isFeriado, isDiarista, isAcademia||isCatequese);
+
+  // título
+  let badge = '';
+  if(isDiarista) badge = diaOrdem===1 ? ' · Diarista Q1' : ' · Diarista Q2';
+  else if(isFeriado) badge = ' · Feriado';
+  else if(isAcademia) badge = ' · Academia';
+  else if(isCatequese) badge = ' · Catequese';
+  document.getElementById('drawer-title').textContent = dataFmt + badge;
+
+  // totais
+  let totalMin=0, minD=0, minEu=0;
+  tasks.forEach(t=>{if(t.min){totalMin+=t.min;if(isDiarista&&t.text&&t.text.includes('[D]'))minD+=t.min;else if(isDiarista)minEu+=t.min;}});
+  const limit = isDiarista?480:isFeriado?20:(isAcademia||isCatequese)?25:dow===6?90:dow===0?40:60;
+
+  let html = '<div class="drawer-totais">';
+  html += `<span class="tt tt-total ${totalMin<=limit?'ok':'over'}" style="font-size:11px;padding:3px 9px;">⏱ ${fmtMin(totalMin)}</span>`;
+  if(isDiarista){
+    html += `<span class="tt tt-diarista" style="font-size:11px;padding:3px 9px;">🟣 ${fmtMin(minD)}</span>`;
+    html += `<span class="tt tt-eu" style="font-size:11px;padding:3px 9px;">🔵 ${fmtMin(minEu)}</span>`;
+  }
+  html += '</div>';
+
+  // tarefas separadas por seção
+  const tarefasD = isDiarista ? tasks.filter(t=>t.text&&t.text.includes('[D]')) : [];
+  const tarefasEu = isDiarista ? tasks.filter(t=>!t.text||!t.text.includes('[D]')) : tasks;
+
+  function buildDrawerTasks(list, prefix) {
+    if(!list.length) return '';
+    let s = prefix ? `<div class="drawer-section-title">${prefix}</div>` : '';
+    list.forEach((t, idx) => {
+      const cat = t.cat || detectCat(t.text||'');
+      const color = (TASK_CATS[cat]||TASK_CATS.diaria).color;
+      const uid = 'mob_'+dateStr+'_'+idx;
+      const checked = !!t._done;
+      s += `<div class="drawer-task">
+        <input type="checkbox" id="${uid}" ${checked?'checked':''} onchange="toggleDrawerTask('${dateStr}',${idx},this.checked,this)">
+        <span class="dt-dot" style="background:${color}"></span>
+        <label for="${uid}" style="${checked?'text-decoration:line-through;color:#9ca3af':''}">${t.text}</label>
+        <span class="dt-min">${t.min?t.min+'m':''}</span>
+      </div>`;
+    });
+    return s;
+  }
+
+  if(isDiarista && tarefasD.length){
+    html += buildDrawerTasks(tarefasD, 'Diarista');
+    html += buildDrawerTasks(tarefasEu, 'Minhas tarefas');
+  } else {
+    html += buildDrawerTasks(tarefasEu, '');
+  }
+
+  // botão adicionar
+  html += `<div style="margin-top:14px"><button onclick="openModalFromDrawer('${dateStr}')" style="width:100%;padding:10px;border:1px dashed #bfdbfe;border-radius:8px;background:#f8faff;color:#3b82d4;font-size:14px;font-weight:600;cursor:pointer;">+ Adicionar tarefa</button></div>`;
+
+  document.getElementById('drawer-body').innerHTML = html;
+  document.getElementById('drawer-bg').classList.add('open');
+  document.getElementById('drawer').classList.add('open');
+}
+
+function closeDrawer() {
+  document.getElementById('drawer-bg').classList.remove('open');
+  document.getElementById('drawer').classList.remove('open');
+}
+
+function toggleDrawerTask(dateStr, idx, val, cb) {
+  initDay(dateStr);
+  state[dateStr][idx]._done = val;
+  const lbl = cb.parentElement.querySelector('label');
+  if(lbl) lbl.style.cssText = val ? 'text-decoration:line-through;color:#9ca3af' : '';
+  saveData();
+  // atualizar contador na célula do calendário
+  const cell = document.querySelector(`[data-date="${dateStr}"]`);
+  if(cell){ const cnt=cell.querySelector('.mob-count'); if(cnt){ const done=state[dateStr].filter(t=>t._done).length; cnt.textContent=done+'/'+state[dateStr].length; } }
+}
+
+function openModalFromDrawer(dateStr) {
+  closeDrawer();
+  setTimeout(()=>openModal(dateStr), 320);
+}
 
 // ─── FILTROS ─────────────────────────────────────────────────────────────────
 let activeFilterResp = 'all';
@@ -878,8 +1040,15 @@ function renderLimpeza(){
       const isAcademia=(dow===3||dow===5)&&inRange&&!isDiarista&&!isFeriado;
       const isCatequese=(dow===2)&&inRange&&!isDiarista&&!isFeriado;
       const cell=document.createElement('div');cell.className='day';
+      cell.dataset.date=dateStr;
       if(!inRange)cell.classList.add('fora');else if(isDiarista)cell.classList.add(diaOrdem===1?'d1':'d2');else if(isFeriado)cell.classList.add('feriado');else if(isWE)cell.classList.add('fds');else if(isAcademia)cell.classList.add('academia');else if(isCatequese)cell.classList.add('catequese');
-      if(inRange){cell.addEventListener('dragover',e=>onDragOver(e,cell));cell.addEventListener('dragleave',e=>onDragLeave(e,cell));cell.addEventListener('drop',e=>onDrop(e,dateStr,cell));}
+      if(inRange){
+        cell.addEventListener('dragover',e=>onDragOver(e,cell));
+        cell.addEventListener('dragleave',e=>onDragLeave(e,cell));
+        cell.addEventListener('drop',e=>onDrop(e,dateStr,cell));
+        // toque mobile: abre gaveta
+        cell.addEventListener('click',e=>{if(window.innerWidth<=600&&!e.target.closest('input,button,a')){openDrawer(dateStr,isDiarista,diaOrdem,isFeriado,isAcademia,isCatequese);}});
+      }
       const dn=document.createElement('div');dn.className='day-num';dn.innerHTML='<span>'+day+'</span>';
       if(inRange){if(isDiarista)dn.innerHTML+='<span class="bdg '+(diaOrdem===1?'bdg-d1':'bdg-d2')+'">'+(diaOrdem===1?'Diarista Q1':'Diarista Q2')+'</span>';else if(isFeriado)dn.innerHTML+='<span class="bdg bdg-f">Feriado</span>';else if(isAcademia)dn.innerHTML+='<span class="bdg bdg-ac">Academia</span>';else if(isCatequese)dn.innerHTML+='<span class="bdg bdg-cat">Catequese</span>';else if(isWE)dn.innerHTML+='<span class="bdg bdg-fs">FDS</span>';}
       cell.appendChild(dn);
@@ -917,6 +1086,11 @@ function renderLimpeza(){
           del.addEventListener('click',e=>{e.stopPropagation();deleteTask(dateStr,idx);});
           row.appendChild(cb);row.appendChild(dot);row.appendChild(lb);row.appendChild(ms);row.appendChild(del);cell.appendChild(row);
         });
+        // contador mobile (visível só em telas pequenas)
+        const mobCnt=document.createElement('span');mobCnt.className='mob-count';
+        const doneCount=tasks.filter(t=>t._done).length;
+        mobCnt.textContent=doneCount+'/'+tasks.length;
+        cell.appendChild(mobCnt);
         const addBtn=document.createElement('div');addBtn.className='add-task-btn no-print';addBtn.textContent='+ adicionar tarefa';addBtn.addEventListener('click',()=>openModal(dateStr));cell.appendChild(addBtn);
         const printBtn=document.createElement('button');printBtn.className='print-day-btn no-print';printBtn.textContent='🖨️';printBtn.title='Imprimir este dia';printBtn.addEventListener('click',e=>{e.stopPropagation();printDay(dateStr,isDiarista,diaOrdem);});cell.appendChild(printBtn);
       }
