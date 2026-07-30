@@ -350,6 +350,7 @@ h1{font-size:20px;font-weight:700;margin-bottom:2px;}
     <button class="primary" onclick="saveData()">💾 Salvar</button>
     <button onclick="window.print()">🖨️ Imprimir</button>
     <button class="danger" onclick="clearAll()">🗑️ Limpar tudo</button>
+    <button style="background:#7c3aed;color:#fff;border-color:#7c3aed;font-size:12px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid;cursor:pointer;" onclick="extendSixMonths()">📅 +6 meses</button>
     <span class="saved-msg" id="saved-msg">✓ Salvo!</span>
     <span style="font-size:11px;color:#57606a;margin-left:auto">Arraste tarefas entre dias · ✕ remove · + adiciona</span>
   </div>
@@ -417,6 +418,7 @@ h1{font-size:20px;font-weight:700;margin-bottom:2px;}
     <button class="green" onclick="saveData()">💾 Salvar</button>
     <button onclick="window.print()">🖨️ Imprimir</button>
     <button class="danger" onclick="clearManut()">🗑️ Limpar manutenção</button>
+    <button style="background:#7c3aed;color:#fff;border-color:#7c3aed;font-size:12px;font-weight:600;padding:5px 12px;border-radius:6px;border:1px solid;cursor:pointer;" onclick="extendSixMonths()">📅 +6 meses</button>
     <span class="saved-msg" id="saved-msg-m">✓ Salvo!</span>
     <span style="font-size:11px;color:#57606a;margin-left:auto">🔵 Eu mesmo · 🟢 Empresa contratada</span>
   </div>
@@ -543,11 +545,16 @@ h1{font-size:20px;font-weight:700;margin-bottom:2px;}
 const MESES=["Janeiro","Fevereiro","Março","Abril","Maio","Junho","Julho","Agosto","Setembro","Outubro","Novembro","Dezembro"];
 const MESES_PT=["Jan","Fev","Mar","Abr","Mai","Jun","Jul","Ago","Set","Out","Nov","Dez"];
 const DIAS=["Dom","Seg","Ter","Qua","Qui","Sex","Sáb"];
-const START=new Date(2026,6,19), END=new Date(2027,0,5);
+const START=new Date(2026,6,19);
+const END_DEFAULT=new Date(2027,0,5);
+const SK_END='limpeza_cal_end';
+function loadEnd(){try{const s=localStorage.getItem(SK_END);if(s){const d=new Date(s+'T12:00:00');if(d>END_DEFAULT)return d;}}catch(e){}return END_DEFAULT;}
+let END=loadEnd();
 function fmt(d){return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0');}
 function fmtMin(v){if(!v)return'—';const h=Math.floor(v/60),m=v%60;return h>0?h+'h'+(m>0?m+'m':''):v+'min';}
 function isInRange(d){return d>=START&&d<=END;}
 function monthsList(){const l=[];let y=START.getFullYear(),m=START.getMonth();const ey=END.getFullYear(),em=END.getMonth();while(y<ey||(y===ey&&m<=em)){l.push({year:y,month:m});m++;if(m>11){m=0;y++;}}return l;}
+function updateSubtitle(){const el=document.querySelector('.subtitle');if(el){const s=START.getDate()+' '+MESES[START.getMonth()].substring(0,3)+' '+START.getFullYear();const e=END.getDate()+' '+MESES[END.getMonth()].substring(0,3)+' '+END.getFullYear();el.textContent=s+' → '+e+' · São Paulo · Interativo · Salva no navegador · Imprimível em A4';}}
 
 // ─── GAVETA MOBILE ───────────────────────────────────────────────────────────
 const DIAS_FULL_MOB=["Domingo","Segunda","Terça","Quarta","Quinta","Sexta","Sábado"];
@@ -957,7 +964,15 @@ const LIMITS={util:60,academia:25,fds_sab:90,fds_dom:40,diarista:480,feriado:20}
 // ─── DIARISTA ────────────────────────────────────────────────────────────────
 // Q1/Q2 alterna globalmente: 1ª visita=Q1, 2ª=Q2, 3ª=Q1...
 const diaristaDates={};
-(function(){let d=new Date(2026,6,22);const lim=new Date(2027,1,1);let count=0;while(d<=lim){const key=fmt(d);count++;diaristaDates[key]=(count%2===1)?1:2;d.setDate(d.getDate()+14);}})();
+function rebuildDiaristaDates(){
+  Object.keys(diaristaDates).forEach(k=>delete diaristaDates[k]);
+  let d=new Date(2026,6,22);
+  // estender até END + 1 mês para cobrir a última quinzena
+  const lim=new Date(END.getFullYear(),END.getMonth()+1,28);
+  let count=0;
+  while(d<=lim){const key=fmt(d);count++;diaristaDates[key]=(count%2===1)?1:2;d.setDate(d.getDate()+14);}
+}
+rebuildDiaristaDates();
 
 // ─── CATEGORIAS DE TAREFAS ───────────────────────────────────────────────────
 const TASK_CATS = {
@@ -997,7 +1012,7 @@ function baseTasks(dateStr,dow,diaOrdem,isFeriado,isDiarista,isAcademia){
   if(isDiarista){
     const base=[T("Organizar antes da diarista",20,"")];
     if(diaOrdem===1)base.push(...[T("[D] Pisos + debaixo móveis",60,"muted"),T("[D] Banheiros completos",70,"muted"),T("[D] Fogão minucioso + coifa",45,"muted"),T("[D] Geladeira + lixeiras",35,"muted"),T("* [D] Colchões (2 lados) + cabeceiras",45,"alergia"),T("* [D] Tapete frente+verso+baixo",25,"alergia"),T("[D] Área serviço + atrás máquina",25,"muted"),T("* [D] Luminárias (3)",25,"alergia"),T("[D] Rack + aparadores + barzinho",20,"muted"),T("[D] Guarda-roupas internos",35,"muted"),T("[D] Portas + batentes (todos)",50,"muted"),T("[D] Cozinha: azulejos+armários+pia",45,"muted")]);
-    else base.push(...[T("[D] Pisos todos os cômodos",60,"muted"),T("[D] Banheiros completos",70,"muted"),T("[D] Sofá completo + almofadas",25,"muted"),T("[D] Sacada + churrasqueira + grades",40,"muted"),T("[D] Rodapés todos os cômodos",55,"muted"),T("[D] Espelhos + janelas",25,"muted"),T("[D] Rack + aparadores + barzinho",20,"muted"),T("[D] Guarda-roupas externos",35,"muted"),T("[D] Tapete: aspiração normal",15,"muted"),T("[D] Cestas banheiros + porta-papéis",10,"muted"),T("[D] Cozinha manutenção + bancadas",30,"muted")]);
+    else base.push(...[T("[D] Pisos todos os cômodos",60,"muted"),T("[D] Banheiros completos",70,"muted"),T("[D] Sofá completo + almofadas",25,"muted"),T("[D] Sacada + churrasqueira + grades",40,"muted"),T("[D] Rodapés todos os cômodos",55,"muted"),T("[D] Rack + aparadores + barzinho",20,"muted"),T("[D] Guarda-roupas externos",35,"muted"),T("[D] Tapete: aspiração normal",15,"muted"),T("[D] Cestas banheiros + porta-papéis",10,"muted"),T("[D] Cozinha manutenção + bancadas",30,"muted")]);
     // tarefas extras da diarista movidas da manutenção
     if(DIARISTA_EXTRAS[dateStr]) base.push(...DIARISTA_EXTRAS[dateStr].map(e=>({...e})));
     base.push(T("Lavar toalhas de banho",5,"lav"));
@@ -1008,14 +1023,15 @@ function baseTasks(dateStr,dow,diaOrdem,isFeriado,isDiarista,isAcademia){
     const base=[T("Fazer camas",10,""),T("Louça + limpar mesa",15,"ref"),T("Lixo se necessário",5,"")];
     if(dow===6){base.push(T("Sacada + plantas + rodo",15,""),T("Passadoria 15 min",15,""),T("Lavar cama suíte",10,"lav"),T("Uniforme João: lavar à mão",15,"unif"));if(day<=7||(day>14&&day<=21))base.push(T("Limpar calçados (quinzenal)",20,""));}
     else{base.push(T("Lavar cama quarto João",10,"lav"),T("Prog. máquina (roupas leves)",5,"lav"));if(day<=7)base.push(T("Medicamentos: organizar (c/ João)",15,"mensal"),T("Filtro de água: limpeza",10,"mensal"));}
-    if(dow===6){if(day<=7)base.push(T("Armário de mantimentos",15,"mensal"),T("Filtros ar condicionado",15,"manut"),T("Plantas: adubar + cuidar",15,""));if(day>7&&day<=14)base.push(T("Freezer por dentro",20,"mensal"),T("Churrasqueira: limpar",20,"mensal"),T("Sapateiras (2): limpar+org.",20,"mensal"),T("Barzinho: limpar",10,"mensal"));if(day>14&&day<=21)base.push(T("Gavetas de roupa: organizar",20,"mensal"));if(day>21)base.push(T("Gavetas utensílios cozinha",15,"mensal"),T("Prateleira de temperos",10,"mensal"));}
+    const month=new Date(dateStr+'T12:00:00').getMonth()+1;
+    if(dow===6){if(day<=7)base.push(T("Armário de mantimentos",15,"mensal"),T("Filtros ar condicionado",15,"manut"),T("Plantas: adubar + cuidar",15,""));if(day<=7&&month%2===0)base.push(T("Ventilador de mesa: limpar (bimestral)",20,"mensal"));if(day<=7&&month%4===0)base.push(T("Spots da casa: limpar (quadrimestral)",25,"mensal"));if(day>7&&day<=14)base.push(T("Freezer por dentro",20,"mensal"),T("Churrasqueira: limpar",20,"mensal"),T("Sapateiras (2): limpar+org.",20,"mensal"),T("Barzinho: limpar",10,"mensal"));if(day>14&&day<=21)base.push(T("Gavetas de roupa: organizar",20,"mensal"));if(day>21)base.push(T("Gavetas utensílios cozinha",15,"mensal"),T("Prateleira de temperos",10,"mensal"));}
     return base;
   }
   const base=[T("Refeições + louça",45,"ref"),T("Fazer camas",10,""),T("Vaso sanitário (todos)",10,""),T("Bancadas cozinha + fogão",5,""),T("Verificar produtos banheiros",3,"")];
   if(isAcademia){if(dow===2)base.push(T("Máquina: roupas pesadas",5,"lav"));if(dow===4)base.push(T("Máquina: panos pequenos",5,"lav"),T("Regar plantas + rodo sacada",10,""),T("Air fryer: deixar bandeja de molho",2,""));base.push(T("Atividade física 1h",60,"ativ"));if(dow===2)base.push(T("Uniforme João: lavar à mão",15,"unif"));return base;}
   if(dow===1)base.push(T("* Aspirar sala + tapete",15,"alergia"),T("Rack + 4 aparadores: tirar pó",10,""),T("Lavar roupas leves",5,"lav"),...(day<=7||(day>14&&day<=21)?[T("Lavar tapete cozinha",5,"lav")]:[]),T("Uniforme João: lavar à mão",15,"unif"));
-  if(dow===3)base.push(T("Guardar roupas pesadas da ter",10,"lav"),T("Micro-ondas por dentro",5,""),T("Escritório 1: mesa+tela+objetos",20,""),T("Lavar toalhas de banho",5,"lav"),T("Uniforme João: lavar à mão",15,"unif"));
-  if(dow===5){base.push(T("* Aspirar quartos (suíte + João)",15,"alergia"),T("Pias banheiros",15,""),T("Escritório 2: mesa+tela+objetos",20,""),T("Air fryer por dentro",5,""),T("Área de serviço: organizar+varrer",10,""));if(day<=7||(day>14&&day<=21))base.push(T("Gaveta material escolar",15,"mensal"));}
+  if(dow===3){base.push(T("Guardar roupas pesadas da ter",10,"lav"),T("Escritório 1: mesa+tela+objetos",20,""),T("Lavar toalhas de banho",5,"lav"),T("Uniforme João: lavar à mão",15,"unif"));if(day<=7)base.push(T("Micro-ondas por dentro (mensal)",10,"mensal"));}
+  if(dow===5){const month=new Date(dateStr+'T12:00:00').getMonth()+1;base.push(T("* Aspirar quartos (suíte + João)",15,"alergia"),T("Pias banheiros",15,""),T("Escritório 2: mesa+tela+objetos",20,""),T("Air fryer por dentro",5,""),T("Área de serviço: organizar+varrer",10,""));if(day<=7)base.push(T("Controles remotos: limpar (mensal)",5,"mensal"));if(day<=7&&month%2!==0)base.push(T("Laptop IBM: limpeza minuciosa (bimestral)",30,"mensal"));if(day<=7||(day>14&&day<=21))base.push(T("Gaveta material escolar",15,"mensal"));}
   return base;
 }
 
@@ -1048,8 +1064,9 @@ const MANUT_BASE = [
 // ─── TAREFAS EXTRAS DA DIARISTA (por data) ───────────────────────────────────
 // Tarefas movidas da manutenção → passam a ser [D] nos dias de diarista
 const DIARISTA_EXTRAS = {
-  // Q2 — 05/ago/2026
+  // Q2 — 05/ago/2026  ← bimestral: espelhos (Ago)
   "2026-08-05": [
+    {text:"[D] Espelhos + janelas (bimestral)",min:25,cls:"muted",cat:"limpeza"},
     {text:"[D] Varais (3): limpar/lavar",min:30,cls:"muted",cat:"limpeza"},
     {text:"[D] Cadeiras escritório (3): limpar",min:30,cls:"muted",cat:"limpeza"},
     {text:"[D] Robô aspirador: saco+filtro+escova",min:20,cls:"muted",cat:"limpeza"},
@@ -1061,12 +1078,20 @@ const DIARISTA_EXTRAS = {
     {text:"[D] Baú de sacolas: limpar",min:20,cls:"muted",cat:"organizacao"},
     {text:"[D] Forno: limpeza profunda",min:45,cls:"muted",cat:"cozinha"},
   ],
+  // Q1 — 16/set/2026  ← bimestral: paredes quartos (Set)
+  "2026-09-16": [
+    {text:"[D] Paredes quartos: limpar (bimestral)",min:40,cls:"muted",cat:"limpeza"},
+  ],
   // Q2 — 30/set/2026
   "2026-09-30": [
     {text:"[D] Varais (3): limpar/lavar",min:30,cls:"muted",cat:"limpeza"},
     {text:"[D] Cadeiras escritório (3): limpar",min:30,cls:"muted",cat:"limpeza"},
     {text:"[D] Robô aspirador: saco+filtro+escova",min:20,cls:"muted",cat:"limpeza"},
     {text:"[D] Travesseiros: limpeza minuciosa",min:30,cls:"alergia",cat:"limpeza"},
+  ],
+  // Q2 — 28/out/2026  ← bimestral: espelhos (Out)
+  "2026-10-28": [
+    {text:"[D] Espelhos + janelas (bimestral)",min:25,cls:"muted",cat:"limpeza"},
   ],
   // Q1 — 04/nov/2026
   "2026-11-04": [
@@ -1075,8 +1100,13 @@ const DIARISTA_EXTRAS = {
     {text:"[D] Baú de sacolas: limpar",min:20,cls:"muted",cat:"organizacao"},
     {text:"[D] Forno: limpeza profunda",min:45,cls:"muted",cat:"cozinha"},
   ],
-  // Q2 — 18/nov/2026
-  "2026-11-18": [
+  // Q1 — 11/nov/2026  ← bimestral: paredes quartos (Nov)
+  "2026-11-11": [
+    {text:"[D] Paredes quartos: limpar (bimestral)",min:40,cls:"muted",cat:"limpeza"},
+  ],
+  // Q2 — 25/nov/2026  ← bimestral: espelhos (Dez)
+  "2026-11-25": [
+    {text:"[D] Espelhos + janelas (bimestral)",min:25,cls:"muted",cat:"limpeza"},
     {text:"[D] Varais (3): limpar/lavar",min:30,cls:"muted",cat:"limpeza"},
     {text:"[D] Cadeiras escritório (3): limpar",min:30,cls:"muted",cat:"limpeza"},
     {text:"[D] Robô aspirador: saco+filtro+escova",min:20,cls:"muted",cat:"limpeza"},
@@ -1092,7 +1122,100 @@ const DIARISTA_EXTRAS = {
     {text:"[D] Baú de sacolas: limpar",min:20,cls:"muted",cat:"organizacao"},
     {text:"[D] Forno: limpeza profunda",min:45,cls:"muted",cat:"cozinha"},
   ],
+  // Q1 — 06/jan/2027  ← bimestral: paredes quartos (Jan)
+  "2027-01-06": [
+    {text:"[D] Paredes quartos: limpar (bimestral)",min:40,cls:"muted",cat:"limpeza"},
+  ],
 };
+
+// ─── ESTENDER PERÍODO (+6 MESES) ─────────────────────────────────────────────
+function extendSixMonths(){
+  // novo fim = END atual + 6 meses (último dia do 6º mês)
+  const newEnd = new Date(END.getFullYear(), END.getMonth()+7, 0); // dia 0 = último dia do mês anterior
+  const oldEndStr = fmt(END);
+
+  // Gerar tarefas de manutenção recorrentes para o novo período
+  // Padrão: a cada ~4 meses desentupimento + revisão trimestral + semestral
+  const newTasks = [];
+  const periodStart = new Date(END.getFullYear(), END.getMonth(), 1); // começo do mês seguinte ao END atual
+  periodStart.setMonth(periodStart.getMonth()+1);
+
+  // Iterar mês a mês no novo período
+  let cur = new Date(END.getFullYear(), END.getMonth()+1, 1);
+  while(cur <= newEnd){
+    const y = cur.getFullYear(), mo = cur.getMonth();
+    // Primeiro sábado do mês para tarefas de manutenção
+    const firstSat = new Date(y, mo, 1);
+    while(firstSat.getDay()!==6) firstSat.setDate(firstSat.getDate()+1);
+    const ds = fmt(firstSat);
+
+    // Desentupimento preventivo: a cada 2 meses (meses pares)
+    if((mo+1)%2===0) newTasks.push({date:ds,text:"Canos: desentupimento preventivo",who:"eu",cat:"hidraulica",min:30});
+
+    // Revisão geral + limpeza AC: a cada 6 meses (Fev/Ago equivalente = meses 1 e 7)
+    if(mo===1||mo===7){
+      newTasks.push({date:ds,text:"Ar condicionado + condensadora: limpeza profissional",who:"empresa",cat:"climatizacao",min:120});
+      newTasks.push({date:ds,text:"PlayStation: limpar",who:"eu",cat:"eletrodomesticos",min:20});
+      newTasks.push({date:ds,text:"Chuveiros: limpeza minuciosa (vinagre)",who:"eu",cat:"hidraulica",min:45});
+      newTasks.push({date:ds,text:"Revisar documentos e contas",who:"eu",cat:"outros",min:60});
+      newTasks.push({date:ds,text:"Tomadas e cabos: verificar",who:"eu",cat:"eletrica",min:30});
+      newTasks.push({date:ds,text:"Telas TVs e computadores: limpar",who:"eu",cat:"eletrodomesticos",min:20});
+      newTasks.push({date:ds,text:"Revisão das portas (dobradiças, maçanetas)",who:"eu",cat:"estrutura",min:30});
+    }
+
+    // Lavar tapete da sala: a cada 3 meses (meses divisíveis por 3)
+    if((mo+1)%3===0) newTasks.push({date:ds,text:"Lavar tapete da sala",who:"eu",cat:"estrutura",min:30});
+
+    cur.setMonth(cur.getMonth()+1);
+  }
+
+  // Gerar extras da diarista para o novo período (bimestrais)
+  // Espelhos: Q2 de meses pares; Paredes quartos: Q1 de meses ímpares
+  // Precisamos reconstruir diaristaDates com o novo END para obter as datas novas
+  const oldEnd = new Date(END.getTime());
+  END = newEnd;
+  rebuildDiaristaDates();
+  const allNewDiarista = Object.entries(diaristaDates)
+    .filter(([d])=>{ const dt=new Date(d+'T12:00:00'); return dt>oldEnd && dt<=newEnd; })
+    .sort(([a],[b])=>a.localeCompare(b));
+
+  allNewDiarista.forEach(([ds, ordem])=>{
+    if(DIARISTA_EXTRAS[ds]) return; // já existe
+    const mo = new Date(ds+'T12:00:00').getMonth()+1;
+    const extras = [];
+    if(ordem===2 && mo%2===0) extras.push({text:"[D] Espelhos + janelas (bimestral)",min:25,cls:"muted",cat:"limpeza"});
+    if(ordem===1 && mo%2!==0) extras.push({text:"[D] Paredes quartos: limpar (bimestral)",min:40,cls:"muted",cat:"limpeza"});
+    // Varais + cadeiras + robô + travesseiros: Q2 alternadas (todas)
+    if(ordem===2){
+      extras.push({text:"[D] Varais (3): limpar/lavar",min:30,cls:"muted",cat:"limpeza"});
+      extras.push({text:"[D] Cadeiras escritório (3): limpar",min:30,cls:"muted",cat:"limpeza"});
+      extras.push({text:"[D] Robô aspirador: saco+filtro+escova",min:20,cls:"muted",cat:"limpeza"});
+      extras.push({text:"[D] Travesseiros: limpeza minuciosa",min:30,cls:"alergia",cat:"limpeza"});
+    }
+    // Armário + baú + forno: Q1 a cada 2 visitas Q1 (~2 meses)
+    if(ordem===1 && mo%2!==0){
+      extras.push({text:"[D] Armário superior: revisar",min:30,cls:"muted",cat:"organizacao"});
+      extras.push({text:"[D] Baú de sacolas: limpar",min:20,cls:"muted",cat:"organizacao"});
+      extras.push({text:"[D] Forno: limpeza profunda",min:45,cls:"muted",cat:"cozinha"});
+    }
+    if(extras.length) DIARISTA_EXTRAS[ds] = extras;
+  });
+
+  // Adicionar novas tarefas de manutenção ao MANUT_BASE
+  newTasks.forEach(t=>{ if(!MANUT_BASE.find(e=>e.date===t.date&&e.text===t.text)) MANUT_BASE.push(t); });
+
+  // END e diaristaDates já foram atualizados acima — só salvar
+  localStorage.setItem(SK_END, fmt(END));
+  updateSubtitle();
+  saveData();
+  renderLimpeza();
+  renderManutencao();
+  renderChart();
+
+  const novoFim = END.getDate()+'/'+String(END.getMonth()+1).padStart(2,'0')+'/'+END.getFullYear();
+  alert('✅ Calendário estendido até '+novoFim+'!\n\nTodas as atividades recorrentes foram geradas automaticamente.');
+}
+
 const CAT_LABELS={hidraulica:"🚿 Hidráulica",eletrica:"⚡ Elétrica",climatizacao:"❄️ Climatização",estrutura:"🏗️ Estrutura",eletrodomesticos:"🏠 Eletrodomésticos",outros:"📋 Outros"};
 const CAT_MANUT_COLORS={hidraulica:"#0891b2",eletrica:"#f59e0b",climatizacao:"#3b82d4",estrutura:"#8b5cf6",eletrodomesticos:"#059669",outros:"#6b7280"};
 
@@ -1514,6 +1637,7 @@ function printDay(dateStr, isDiarista, diaOrdem) {
 
 // ─── INIT ────────────────────────────────────────────────────────────────────
 loadState();
+updateSubtitle();
 renderLimpeza();
 renderManutencao();
 renderChart();
