@@ -217,6 +217,30 @@ h1{font-size:20px;font-weight:700;margin-bottom:2px;}
 .drawer-totais{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px;}
 .drawer-totais .tt{font-size:11px;padding:3px 9px;}
 
+/* ── MOVER TAREFA MOBILE ── */
+.drawer-task-move{font-size:12px;color:#3b82d4;background:none;border:none;cursor:pointer;padding:2px 6px;white-space:nowrap;flex-shrink:0;border-radius:4px;line-height:1;}
+.drawer-task-move:active{background:#dbeafe;}
+.move-picker-bg{display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:600;}
+.move-picker-bg.open{display:block;}
+.move-picker{position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:16px 16px 0 0;padding:0 0 env(safe-area-inset-bottom);max-height:72vh;overflow-y:auto;z-index:601;transform:translateY(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);}
+.move-picker.open{transform:translateY(0);}
+.move-picker-handle{width:40px;height:4px;background:#e5e7eb;border-radius:2px;margin:10px auto 6px;}
+.move-picker-header{padding:10px 16px 8px;border-bottom:1px solid #f3f4f6;display:flex;align-items:center;justify-content:space-between;}
+.move-picker-title{font-size:14px;font-weight:700;}
+.move-picker-close{font-size:20px;color:#57606a;background:none;border:none;cursor:pointer;line-height:1;}
+.move-picker-body{padding:8px 12px 16px;}
+.move-picker-month{font-size:10px;font-weight:700;color:#57606a;letter-spacing:.5px;text-transform:uppercase;padding:10px 4px 4px;}
+.move-picker-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:4px;margin-bottom:4px;}
+.move-day-btn{border:1px solid #e5e7eb;border-radius:6px;padding:6px 2px;font-size:11px;text-align:center;cursor:pointer;background:#fff;color:#1f2328;line-height:1.2;}
+.move-day-btn:active{background:#dbeafe;}
+.move-day-btn.today{border-color:#3b82d4;font-weight:700;color:#3b82d4;}
+.move-day-btn.fds{background:#f0fdf4;}
+.move-day-btn.d1{background:#f5f3ff;border-color:#6d28d9;}
+.move-day-btn.d2{background:#faf5ff;border-color:#8b5cf6;}
+.move-day-btn.feriado{background:#fffbeb;border-color:#f59e0b;}
+.move-day-btn.empty{border:none;background:transparent;pointer-events:none;}
+.move-day-dow{font-size:8px;color:#57606a;text-align:center;padding:2px 0;}
+
 /* ── MOBILE ── */
 @media (max-width:600px){
   .wrapper{padding:8px 4px 80px;}
@@ -258,6 +282,7 @@ h1{font-size:20px;font-weight:700;margin-bottom:2px;}
 @media (min-width:601px){
   .mob-count{display:none;}
   .drawer-bg,.drawer{display:none!important;}
+  .move-picker-bg,.move-picker{display:none!important;}
 }
 
 /* ── GRÁFICO ── */
@@ -371,6 +396,17 @@ h1{font-size:20px;font-weight:700;margin-bottom:2px;}
     <button class="drawer-close" onclick="closeDrawer()">×</button>
   </div>
   <div class="drawer-body" id="drawer-body"></div>
+</div>
+
+<!-- PICKER DE DATA (MOVER TAREFA MOBILE) -->
+<div class="move-picker-bg" id="move-picker-bg" onclick="closeMovePickerOnly()"></div>
+<div class="move-picker" id="move-picker">
+  <div class="move-picker-handle"></div>
+  <div class="move-picker-header">
+    <span class="move-picker-title">Mover para outro dia</span>
+    <button class="move-picker-close" onclick="closeMovePickerOnly()">×</button>
+  </div>
+  <div class="move-picker-body" id="move-picker-body"></div>
 </div>
 
 <!-- ══════════════════════════════════════════
@@ -549,16 +585,19 @@ function openDrawer(dateStr, isDiarista, diaOrdem, isFeriado, isAcademia, isCate
   function buildDrawerTasks(list, prefix) {
     if(!list.length) return '';
     let s = prefix ? `<div class="drawer-section-title">${prefix}</div>` : '';
-    list.forEach((t, idx) => {
+    list.forEach((t) => {
+      // índice real no array original (necessário para mover/toggle)
+      const realIdx = tasks.indexOf(t);
       const cat = t.cat || detectCat(t.text||'');
       const color = (TASK_CATS[cat]||TASK_CATS.diaria).color;
-      const uid = 'mob_'+dateStr+'_'+idx;
+      const uid = 'mob_'+dateStr+'_'+realIdx;
       const checked = !!t._done;
       s += `<div class="drawer-task">
-        <input type="checkbox" id="${uid}" ${checked?'checked':''} onchange="toggleDrawerTask('${dateStr}',${idx},this.checked,this)">
+        <input type="checkbox" id="${uid}" ${checked?'checked':''} onchange="toggleDrawerTask('${dateStr}',${realIdx},this.checked,this)">
         <span class="dt-dot" style="background:${color}"></span>
         <label for="${uid}" style="${checked?'text-decoration:line-through;color:#9ca3af':''}">${t.text}</label>
         <span class="dt-min">${t.min?t.min+'m':''}</span>
+        <button class="drawer-task-move" onclick="openMovePicker('${dateStr}',${realIdx})" title="Mover para outro dia">↗ Mover</button>
       </div>`;
     });
     return s;
@@ -598,6 +637,90 @@ function toggleDrawerTask(dateStr, idx, val, cb) {
 function openModalFromDrawer(dateStr) {
   closeDrawer();
   setTimeout(()=>openModal(dateStr), 320);
+}
+
+// ─── MOVER TAREFA MOBILE ─────────────────────────────────────────────────────
+let _moveSrcDate = null, _moveSrcIdx = null;
+
+function openMovePicker(srcDateStr, taskIdx) {
+  _moveSrcDate = srcDateStr;
+  _moveSrcIdx  = taskIdx;
+
+  const body = document.getElementById('move-picker-body');
+  let html = '';
+
+  monthsList().forEach(({year, month}) => {
+    const dim = new Date(year, month+1, 0).getDate();
+    const firstDow = new Date(year, month, 1).getDay();
+    let hasVisible = false;
+    // verificar se há dias visíveis neste mês (excluindo dia de origem)
+    for(let d=1; d<=dim; d++){
+      const dt = new Date(year, month, d);
+      if(isInRange(dt) && fmt(dt) !== srcDateStr){ hasVisible = true; break; }
+    }
+    if(!hasVisible) return;
+
+    html += `<div class="move-picker-month">${MESES[month]} ${year}</div>`;
+    // cabeçalho dos dias da semana
+    html += '<div class="move-picker-grid">';
+    ['D','S','T','Q','Q','S','S'].forEach(d => {
+      html += `<div class="move-day-dow">${d}</div>`;
+    });
+    html += '</div>';
+    html += '<div class="move-picker-grid">';
+    for(let i=0; i<firstDow; i++) html += '<div class="move-day-btn empty"></div>';
+    for(let day=1; day<=dim; day++){
+      const dt = new Date(year, month, day);
+      const ds = fmt(dt);
+      const dow = dt.getDay();
+      if(!isInRange(dt)){
+        html += `<div class="move-day-btn empty">${day}</div>`;
+        continue;
+      }
+      if(ds === srcDateStr){
+        // dia de origem — desabilitado
+        html += `<div class="move-day-btn empty" style="opacity:.3;background:#f3f4f6;">${day}</div>`;
+        continue;
+      }
+      const isDiar = !!diaristaDates[ds];
+      const isFer  = !!FERIADOS[ds];
+      const isWE   = dow===0||dow===6;
+      let cls = isDiar ? (diaristaDates[ds]===1?'d1':'d2') : isFer ? 'feriado' : isWE ? 'fds' : '';
+      html += `<div class="move-day-btn ${cls}" onclick="confirmMoveTask('${ds}')">${day}</div>`;
+    }
+    html += '</div>';
+  });
+
+  body.innerHTML = html;
+  document.getElementById('move-picker-bg').classList.add('open');
+  document.getElementById('move-picker').classList.add('open');
+}
+
+function closeMovePickerOnly() {
+  document.getElementById('move-picker-bg').classList.remove('open');
+  document.getElementById('move-picker').classList.remove('open');
+}
+
+function confirmMoveTask(targetDateStr) {
+  if(!_moveSrcDate || _moveSrcIdx === null) return;
+  initDay(_moveSrcDate);
+  initDay(targetDateStr);
+  const task = state[_moveSrcDate].splice(_moveSrcIdx, 1)[0];
+  state[targetDateStr].push(task);
+  saveData();
+  renderLimpeza();
+  closeMovePickerOnly();
+  closeDrawer();
+  // feedback visual: abrir drawer do dia destino
+  const dt = new Date(targetDateStr+'T12:00:00');
+  const dow = dt.getDay();
+  const isDiarista = !!diaristaDates[targetDateStr];
+  const diaOrdem   = diaristaDates[targetDateStr] || 1;
+  const isFeriado  = !!FERIADOS[targetDateStr];
+  const isAcademia = (dow===3||dow===5) && !isDiarista && !isFeriado;
+  const isCatequese= (dow===2) && !isDiarista && !isFeriado;
+  setTimeout(() => openDrawer(targetDateStr, isDiarista, diaOrdem, isFeriado, isAcademia, isCatequese), 150);
+  _moveSrcDate = null; _moveSrcIdx = null;
 }
 
 // ─── FILTROS ─────────────────────────────────────────────────────────────────
